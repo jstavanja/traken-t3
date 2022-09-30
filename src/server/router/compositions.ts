@@ -13,6 +13,21 @@ export const compositionsRouter = createRouter() // TODO: use protected router l
       });
     },
   })
+  .query("get", {
+    input: z.object({
+      id: z.string(),
+    }),
+    async resolve({ ctx, input }) {
+      return await ctx.prisma.composition.findFirstOrThrow({
+        where: {
+          id: input.id,
+        },
+        include: {
+          tracks: true,
+        },
+      });
+    },
+  })
   .mutation("create", {
     input: newCompositionSchema,
     async resolve({ ctx, input }) {

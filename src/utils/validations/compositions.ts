@@ -6,3 +6,8 @@ export const newCompositionSchema = z.object({
     .string()
     .min(1, "Your composition must have a quick description."),
 });
+
+export const editCompositionSchema = z.object({
+  name: z.string().nullable(),
+  description: z.string().nullable(),
+});

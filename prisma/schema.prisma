@@ -73,7 +73,6 @@ model Composition {
 model Track {
     id            String       @id @default(cuid())
     name          String
-    mediaUrl      String
     Composition   Composition? @relation(fields: [compositionId], references: [id])
     compositionId String?
 }
