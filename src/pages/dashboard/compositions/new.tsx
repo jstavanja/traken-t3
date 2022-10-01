@@ -3,6 +3,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { trpc } from "../../../utils/trpc";
 import { newCompositionSchema } from "../../../utils/validations/compositions";
+import AuthError from "../../../components/dashboard/AuthError";
+import AuthGuard from "../../../components/AuthGuard";
 
 interface NewCompositionData {
   name: string;
@@ -40,10 +42,12 @@ const NewCompositionForm = () => {
 
 const NewCompositionPage = () => {
   return (
-    <div>
-      <h1>Create new composition</h1>
-      <NewCompositionForm />
-    </div>
+    <AuthGuard CustomError={AuthError}>
+      <div>
+        <h1>Create new composition</h1>
+        <NewCompositionForm />
+      </div>
+    </AuthGuard>
   );
 };
 

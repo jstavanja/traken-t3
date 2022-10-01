@@ -2,9 +2,17 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { FC, PropsWithChildren } from "react";
 
-const AuthGuard: FC<PropsWithChildren> = ({ children }) => {
+interface AuthGuardProps {
+  CustomError?: FC;
+}
+
+const AuthGuard: FC<PropsWithChildren<AuthGuardProps>> = ({
+  children,
+  CustomError,
+}) => {
   const { status } = useSession();
   if (status === "unauthenticated") {
+    if (CustomError) return <CustomError />;
     return (
       <div>
         <p>You must be logged in in order to view this page.</p>
