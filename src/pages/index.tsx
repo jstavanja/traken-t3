@@ -5,6 +5,9 @@ const Home = () => {
   const { data: session } = useSession();
   return (
     <div>
+      <nav>
+        <Link href="/compositions">Compositions</Link>
+      </nav>
       <h1>Welcome to traken</h1>
       {session?.user && (
         <>

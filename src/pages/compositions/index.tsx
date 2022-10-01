@@ -1,6 +1,6 @@
 import type { NextPage } from "next";
 import Head from "next/head";
-import { trpc } from "../utils/trpc";
+import { trpc } from "../../utils/trpc";
 
 const Home: NextPage = () => {
   const { data: compositions } = trpc.useQuery(["compositions.getAll"]);
@@ -25,19 +25,23 @@ const Home: NextPage = () => {
               >
                 <h3>{composition.name}</h3>
                 <p>{composition.description}</p>
-                <h4>Tracks in composition:</h4>
-                {composition.tracks.map((track) => {
-                  return (
-                    <ul
-                      style={{
-                        border: "1px solid black",
-                      }}
-                      key={track.id}
-                    >
-                      <li>{track.name}</li>
-                    </ul>
-                  );
-                })}
+                {composition.tracks.length > 0 && (
+                  <>
+                    <h4>Tracks in composition:</h4>
+                    {composition.tracks.map((track, idx) => {
+                      return (
+                        <ul
+                          style={{
+                            border: "1px solid black",
+                          }}
+                          key={track.name + idx}
+                        >
+                          <li>{track.name}</li>
+                        </ul>
+                      );
+                    })}
+                  </>
+                )}
               </li>
             );
           })}

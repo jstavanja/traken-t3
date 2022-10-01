@@ -1,7 +1,6 @@
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { useEffect } from "react";
-import { trpc } from "../../utils/trpc";
+import { trpc } from "../../../utils/trpc";
 
 const CompositionsListPage = () => {
   const { data: compositions } = trpc.useQuery(["userCompositions.getAll"]);
