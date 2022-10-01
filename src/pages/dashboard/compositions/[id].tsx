@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -47,6 +48,9 @@ const EditCompositionPage = () => {
   return (
     <div>
       <h1>Edit composition: {composition?.name}</h1>
+      <Link href="/dashboard/compositions">
+        <button>Go back to your compositions</button>
+      </Link>
       <h2>Add a track</h2>
       <form onSubmit={onSubmit}>
         <input
