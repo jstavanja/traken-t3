@@ -3,7 +3,9 @@ import Link from "next/link";
 import { trpc } from "../../../utils/trpc";
 
 const CompositionsListPage = () => {
-  const { data: compositions } = trpc.useQuery(["userCompositions.getAll"]);
+  const { data: compositions } = trpc.useQuery([
+    "dashboardCompositions.getAll",
+  ]);
   const { status } = useSession();
 
   return (

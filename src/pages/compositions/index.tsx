@@ -1,5 +1,6 @@
 import type { NextPage } from "next";
 import Head from "next/head";
+import Link from "next/link";
 import { trpc } from "../../utils/trpc";
 
 const Home: NextPage = () => {
@@ -23,7 +24,16 @@ const Home: NextPage = () => {
                 }}
                 key={composition.id}
               >
-                <h3>{composition.name}</h3>
+                {composition.currentUserHasAccess && (
+                  <Link href={`/compositions/${composition.id}`} passHref>
+                    <a>
+                      <h3>{composition.name}</h3>
+                    </a>
+                  </Link>
+                )}
+                {!composition.currentUserHasAccess && (
+                  <h3>{composition.name}</h3>
+                )}
                 <p>{composition.description}</p>
                 {composition.tracks.length > 0 && (
                   <>
@@ -52,30 +62,3 @@ const Home: NextPage = () => {
 };
 
 export default Home;
-
-type TechnologyCardProps = {
-  name: string;
-  description: string;
-  documentation: string;
-};
-
-const TechnologyCard = ({
-  name,
-  description,
-  documentation,
-}: TechnologyCardProps) => {
-  return (
-    <section className={styles.card}>
-      <h2 className={styles.cardTitle}>{name}</h2>
-      <p className={styles.cardDescription}>{description}</p>
-      <a
-        className={styles.cardDocumentation}
-        href={documentation}
-        target="_blank"
-        rel="noreferrer"
-      >
-        Documentation
-      </a>
-    </section>
-  );
-};

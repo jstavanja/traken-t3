@@ -2,7 +2,7 @@ import { z } from "zod";
 import { newCompositionSchema } from "../../utils/validations/compositions";
 import { createProtectedRouter } from "./context";
 
-export const protectedCompositionsRouter = createProtectedRouter()
+export const dashboardCompositionsRouter = createProtectedRouter()
   .query("getAll", {
     async resolve({ ctx }) {
       const user = ctx.session.user;

@@ -14,5 +14,4 @@ enjoy development
 # TODO
 
 - use some actual bucket, like s3 / etc
-- create a purchasing system
 - make the tracks selectable and playable simultaneously

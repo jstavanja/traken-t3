@@ -13,7 +13,7 @@ const EditCompositionPage = () => {
 
   const { data: composition, error } = trpc.useQuery(
     [
-      "userCompositions.get",
+      "dashboardCompositions.get",
       {
         id: compositionId ?? "",
       },

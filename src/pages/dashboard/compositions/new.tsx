@@ -18,7 +18,7 @@ const NewCompositionForm = () => {
     resolver: zodResolver(newCompositionSchema),
   });
 
-  const mutation = trpc.useMutation("userCompositions.create");
+  const mutation = trpc.useMutation("dashboardCompositions.create");
   const router = useRouter();
 
   const onSubmit = handleSubmit(async (data) => {
