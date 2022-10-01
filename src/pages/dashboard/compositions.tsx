@@ -7,6 +7,9 @@ const CompositionsListPage = () => {
   return (
     <div>
       <h1>Your Compositions</h1>
+      <Link href={"/dashboard/compositions/new"}>
+        <button>Add new composition</button>
+      </Link>
       <ul>
         {compositions?.map((composition) => {
           return (
