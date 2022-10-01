@@ -1,6 +1,10 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/router";
-import { ChangeEvent, useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 import { trpc } from "../../../utils/trpc";
+
+import { newTrackSchema } from "../../../utils/validations/track";
 
 const EditCompositionPage = () => {
   const router = useRouter();
@@ -13,44 +17,46 @@ const EditCompositionPage = () => {
     },
   ]);
 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<z.infer<typeof newTrackSchema>>({
+    resolver: zodResolver(newTrackSchema),
+  });
+
   const { mutateAsync: newTrackMutation } = trpc.useMutation(
     "tracks.createAndGetFilename"
   );
 
-  async function handleSubmit(e: ChangeEvent<HTMLFormElement>) {
-    e.preventDefault();
-
-    const formData = new FormData(e.target);
-
+  const onSubmit = handleSubmit(async (values) => {
     const newTrack = await newTrackMutation({
-      name: fileName,
+      name: values.name,
       compositionId,
     });
 
-    console.log({ newTrack });
+    const formData = new FormData();
+    formData.set("file", values.file[0]);
 
     await fetch(`/api/upload-track?filename=${newTrack.fileName}`, {
       method: "POST",
       body: formData,
     });
-  }
-
-  const [fileName, setFileName] = useState("");
+  });
 
   return (
     <div>
-      <h1>Edit composition</h1>
+      <h1>Edit composition: {composition?.name}</h1>
       <h2>Add a track</h2>
-      <input
-        type="text"
-        name="name"
-        placeholder="Enter the name of the track"
-        onChange={(e) => {
-          setFileName(e.target.value);
-        }}
-      />
-      <form onSubmit={handleSubmit}>
-        <input type="file" accept="audio/mpeg" name="file" />
+      <form onSubmit={onSubmit}>
+        <input
+          type="text"
+          {...register("name")}
+          placeholder="Enter the name of the track"
+        />
+        {errors.name && <p>{errors.name?.message}</p>}
+        <input type="file" accept="audio/mpeg" {...register("file")} />
+        {errors.file && <p>{String(errors.file?.message)}</p>}
         <button type="submit">Upload track</button>
       </form>
 
@@ -60,7 +66,13 @@ const EditCompositionPage = () => {
       {composition?.tracks?.map((track) => (
         <div key={track.id}>
           <h4>{track.name}</h4>
-          <audio src={`/tmp/${track.id}.mp3`}></audio>
+          <audio controls>
+            <source
+              src={`${process.env.NEXT_PUBLIC_TRACKS_SERVER}/${track.id}.mp3`}
+              type="audio/mpeg"
+            />
+            Your browser does not support the audio element.
+          </audio>
         </div>
       ))}
     </div>

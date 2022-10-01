@@ -1,5 +1,4 @@
-import type { NextApiRequest, NextApiResponse } from "next";
-import { randomUUID } from "crypto";
+import type { NextApiRequest } from "next";
 
 import formidable from "formidable";
 
@@ -9,16 +8,14 @@ export const config = {
   },
 };
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+export default async function handler(req: NextApiRequest) {
   const filename = req.query.filename as string;
 
   const form = new formidable.IncomingForm({
     filename: (name, ext) => {
       return filename + ext;
     },
+    uploadDir: "/tmp/tracks",
     keepExtensions: true,
   });
 
