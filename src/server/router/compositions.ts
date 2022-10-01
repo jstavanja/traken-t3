@@ -8,7 +8,11 @@ export const compositionsRouter = createRouter() // TODO: use protected router l
     async resolve({ ctx }) {
       return await ctx.prisma.composition.findMany({
         include: {
-          tracks: true,
+          tracks: {
+            select: {
+              name: true,
+            },
+          },
         },
       });
     },
@@ -23,21 +27,12 @@ export const compositionsRouter = createRouter() // TODO: use protected router l
           id: input.id,
         },
         include: {
-          tracks: true,
+          tracks: {
+            select: {
+              name: true,
+            },
+          },
         },
       });
-    },
-  })
-  .mutation("create", {
-    input: newCompositionSchema,
-    async resolve({ ctx, input }) {
-      await ctx.prisma.composition.create({
-        data: {
-          name: input.name,
-          description: input.description,
-        },
-      });
-
-      return input;
     },
   });
