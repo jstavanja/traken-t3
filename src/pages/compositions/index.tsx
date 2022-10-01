@@ -24,16 +24,11 @@ const Home: NextPage = () => {
                 }}
                 key={composition.id}
               >
-                {composition.currentUserHasAccess && (
-                  <Link href={`/compositions/${composition.id}`} passHref>
-                    <a>
-                      <h3>{composition.name}</h3>
-                    </a>
-                  </Link>
-                )}
-                {!composition.currentUserHasAccess && (
-                  <h3>{composition.name}</h3>
-                )}
+                <Link href={`/compositions/${composition.id}`} passHref>
+                  <a>
+                    <h3>{composition.name}</h3>
+                  </a>
+                </Link>
                 <p>{composition.description}</p>
                 {composition.tracks.length > 0 && (
                   <>

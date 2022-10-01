@@ -47,7 +47,7 @@ const ViewCompositionPage = () => {
               </Link>
             )}
             {!composition.currentUserHasAccess && (
-              <button onClick={buyComposition}>Play this composition</button>
+              <button onClick={buyComposition}>Buy this composition</button>
             )}
             <div>
               {composition.tracks?.map((track, idx) => (
