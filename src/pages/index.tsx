@@ -1,21 +1,16 @@
-import { useSession, signOut } from "next-auth/react";
-import Link from "next/link";
+import { useSession } from "next-auth/react";
+import { WelcomeHero } from "../components/WelcomeHero";
 
 const Home = () => {
   const { data: session } = useSession();
   return (
     <div>
-      <h1>Welcome to traken</h1>
       {session?.user && (
         <>
           <p>Logged in as {session?.user?.email}</p>
         </>
       )}
-      {!session?.user && (
-        <Link href="/api/auth/signin">
-          <button>Sign in</button>
-        </Link>
-      )}
+      {!session?.user && <WelcomeHero />}
     </div>
   );
 };
