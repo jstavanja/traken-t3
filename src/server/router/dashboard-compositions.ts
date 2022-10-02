@@ -1,5 +1,8 @@
 import { z } from "zod";
-import { newCompositionSchema } from "../../utils/validations/compositions";
+import {
+  editCompositionSchema,
+  newCompositionSchema,
+} from "../../utils/validations/compositions";
 import { createProtectedRouter } from "./context";
 
 export const dashboardCompositionsRouter = createProtectedRouter()
@@ -61,5 +64,19 @@ export const dashboardCompositionsRouter = createProtectedRouter()
       });
 
       return input;
+    },
+  })
+  .mutation("edit", {
+    input: editCompositionSchema,
+    async resolve({ ctx, input }) {
+      return await ctx.prisma.composition.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          name: input.name ?? undefined,
+          description: input.description ?? undefined,
+        },
+      });
     },
   });

@@ -8,6 +8,7 @@ export const newCompositionSchema = z.object({
 });
 
 export const editCompositionSchema = z.object({
+  id: z.string(),
   name: z.string().nullable(),
   description: z.string().nullable(),
 });
