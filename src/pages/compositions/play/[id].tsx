@@ -1,11 +1,6 @@
 import { useRouter } from "next/router";
-import { useForm } from "react-hook-form";
 import AuthGuard from "../../../components/AuthGuard";
 import { trpc } from "../../../utils/trpc";
-
-interface FormData {
-  activeTracks: Record<string, boolean>;
-}
 
 const ViewCompositionPage = () => {
   const router = useRouter();
@@ -23,25 +18,9 @@ const ViewCompositionPage = () => {
     }
   );
 
-  const { register, watch } = useForm<FormData>({
-    defaultValues: {
-      activeTracks: {},
-    },
-  });
-
-  const activeTracks = watch("activeTracks");
-  const selectedTracks = Object.entries(activeTracks)
-    .filter(([, selected]) => {
-      return selected;
-    })
-    .map(([trackId]) => trackId);
-
-  const playSelected = () => {
-    selectedTracks.forEach((trackId) => {
-      const trackDomElement = document.getElementById(
-        `track-${trackId}`
-      ) as HTMLAudioElement;
-      trackDomElement.play();
+  const playAll = () => {
+    document.querySelectorAll("audio").forEach((audioElement) => {
+      audioElement.play();
     });
   };
 
@@ -63,15 +42,6 @@ const ViewCompositionPage = () => {
               {composition.tracks?.map((track) => (
                 <div key={track.id}>
                   <h4>{track.name}</h4>
-                  <label htmlFor={`activate-track-${track.id}`}>
-                    Track active
-                  </label>
-                  <input
-                    type="checkbox"
-                    id={`activate-track-${track.id}`}
-                    // {...trackFormProps[track.id]}
-                    {...register(`activeTracks.${track.id}`)}
-                  />
                   <audio controls id={`track-${track.id}`}>
                     <source
                       src={`${process.env.NEXT_PUBLIC_TRACKS_SERVER}/${track.id}.mp3`}
@@ -81,8 +51,8 @@ const ViewCompositionPage = () => {
                   </audio>
                 </div>
               ))}
-              <button onClick={playSelected}>Play active tracks</button>
-              <button onClick={stopAll}>Stop all tracks</button>
+              <button onClick={playAll}>Play active tracks</button>
+              <button onClick={stopAll}>Stop and reset all tracks</button>
             </div>
           </>
         )}
