@@ -15,6 +15,10 @@ interface NewCompositionData {
 const NewCompositionForm = () => {
   const form = useForm<NewCompositionData>({
     validate: zodResolver(newCompositionSchema),
+    initialValues: {
+      name: "",
+      description: "",
+    },
   });
 
   const mutation = trpc.useMutation("dashboardCompositions.create");
