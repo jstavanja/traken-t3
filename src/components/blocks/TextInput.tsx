@@ -1,12 +1,9 @@
+import { ChangeEventHandler, FC, FocusEventHandler, useState } from "react";
 import {
-  ChangeEventHandler,
-  FC,
-  FocusEventHandler,
-  forwardRef,
-  useState,
-} from "react";
-import { TextInput as MantineTextInput, createStyles } from "@mantine/core";
-import { Controller } from "react-hook-form";
+  TextInput as MantineTextInput,
+  createStyles,
+  TextInputProps,
+} from "@mantine/core";
 
 const useStyles = createStyles(
   (theme, { floating }: { floating: boolean }) => ({
@@ -48,30 +45,18 @@ const useStyles = createStyles(
   })
 );
 
-interface InputProps {
-  id?: string;
-  value?: string;
-  onChange?: ChangeEventHandler<HTMLInputElement>;
-  onBlur?: FocusEventHandler<HTMLInputElement>;
-  onFocus?: FocusEventHandler<HTMLInputElement>;
-  placeholder?: string;
-  label?: string;
-  required?: boolean;
-}
-
-export const TextInput: FC<InputProps> = ({
-  id,
+export const TextInput: FC<TextInputProps> = ({
   onChange,
   onBlur,
   onFocus,
   value,
-  placeholder,
-  label,
-  required,
+  error,
+  ...otherProps
 }) => {
   const [focused, setFocused] = useState(false);
   const { classes } = useStyles({
-    floating: value?.trim().length !== 0 || focused,
+    floating:
+      String(value ?? "").trim().length !== 0 || focused || error !== null,
   });
 
   const handleOnChange: ChangeEventHandler<HTMLInputElement> = (event) => {
@@ -90,17 +75,13 @@ export const TextInput: FC<InputProps> = ({
 
   return (
     <MantineTextInput
-      id={id}
-      label={label}
-      placeholder={placeholder}
-      required={required}
-      classNames={classes}
       value={value}
       onChange={handleOnChange}
       onFocus={handleOnFocus}
       onBlur={handleOnBlur}
-      mt="md"
-      autoComplete="nope"
+      classNames={classes}
+      error={error}
+      {...otherProps}
     />
   );
 };

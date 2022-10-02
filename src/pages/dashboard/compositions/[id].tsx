@@ -2,7 +2,6 @@ import { Composition, Track } from "@prisma/client";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { FC, useState } from "react";
-import { z } from "zod";
 import AuthGuard from "../../../components/AuthGuard";
 import AuthError from "../../../components/dashboard/AuthError";
 import { trpc } from "../../../utils/trpc";
@@ -13,16 +12,32 @@ import {
   editTrackSchema,
   newTrackSchema,
 } from "../../../utils/validations/track";
-import { Button, Container, Group, Paper, Stack, Title } from "@mantine/core";
+import {
+  Button,
+  Container,
+  FileInput,
+  Group,
+  Paper,
+  Stack,
+  Title,
+} from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
 
 interface AddTrackFormProps {
   compositionId: string;
 }
 
+interface NewTrackFormValues {
+  name: string;
+  file?: File;
+}
+
 const AddTrackForm: FC<AddTrackFormProps> = ({ compositionId }) => {
-  const form = useForm({
+  const form = useForm<NewTrackFormValues>({
     validate: zodResolver(newTrackSchema),
+    initialValues: {
+      name: "",
+    },
   });
 
   const { mutateAsync: newTrackMutation } = trpc.useMutation(
@@ -30,13 +45,15 @@ const AddTrackForm: FC<AddTrackFormProps> = ({ compositionId }) => {
   );
 
   const onTrackAddSubmit = form.onSubmit(async (values) => {
+    if (!values.file) return;
+
     const newTrack = await newTrackMutation({
       name: values.name,
       compositionId,
     });
 
     const formData = new FormData();
-    formData.set("file", values.file[0]);
+    formData.set("file", values.file);
 
     await fetch(`/api/upload-track?filename=${newTrack.fileName}`, {
       method: "POST",
@@ -46,15 +63,19 @@ const AddTrackForm: FC<AddTrackFormProps> = ({ compositionId }) => {
 
   return (
     <form onSubmit={onTrackAddSubmit}>
-      <TextInput
-        label="Name"
-        placeholder="Vocals, guitar, ..."
-        {...form.getInputProps("name")}
-      />
-      {form.errors.name && <p>{form.errors.name}</p>}
-      <input type="file" accept="audio/mpeg" {...form.getInputProps("file")} />
-      {form.errors.file && <p>{form.errors.file}</p>}
-      <button type="submit">Upload track</button>
+      <Stack>
+        <TextInput
+          label="Name"
+          placeholder="Vocals, guitar, ..."
+          {...form.getInputProps("name")}
+        />
+        <FileInput
+          accept="audio/mpeg"
+          {...form.getInputProps("file")}
+          placeholder="File"
+        />
+        <Button type="submit">Upload track</Button>
+      </Stack>
     </form>
   );
 };
