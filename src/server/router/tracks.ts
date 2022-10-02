@@ -66,6 +66,19 @@ export const tracksRouter = createProtectedRouter() // TODO: use protected route
       ) {
         throw new Error("You are not authorized to alter this composition");
       }
+
+      const deleteFileResult = await fetch(
+        `http://localhost:3000/api/delete-track?id=${input.id}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      console.log(deleteFileResult);
+
+      if (deleteFileResult.status !== 200)
+        throw new Error("Could not delete the track files");
+
       return await ctx.prisma.track.delete({
         where: {
           id: input.id,
