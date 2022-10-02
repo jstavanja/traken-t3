@@ -1,6 +1,11 @@
 import { useRouter } from "next/router";
+import { useForm } from "react-hook-form";
 import AuthGuard from "../../../components/AuthGuard";
 import { trpc } from "../../../utils/trpc";
+
+interface FormData {
+  activeTracks: Record<string, boolean>;
+}
 
 const ViewCompositionPage = () => {
   const router = useRouter();
@@ -18,6 +23,35 @@ const ViewCompositionPage = () => {
     }
   );
 
+  const { register, watch } = useForm<FormData>({
+    defaultValues: {
+      activeTracks: {},
+    },
+  });
+
+  const activeTracks = watch("activeTracks");
+  const selectedTracks = Object.entries(activeTracks)
+    .filter(([, selected]) => {
+      return selected;
+    })
+    .map(([trackId]) => trackId);
+
+  const playSelected = () => {
+    selectedTracks.forEach((trackId) => {
+      const trackDomElement = document.getElementById(
+        `track-${trackId}`
+      ) as HTMLAudioElement;
+      trackDomElement.play();
+    });
+  };
+
+  const stopAll = () => {
+    document.querySelectorAll("audio").forEach((audioElement) => {
+      audioElement.pause();
+      audioElement.currentTime = 0.0;
+    });
+  };
+
   return (
     <AuthGuard>
       <div>
@@ -29,7 +63,16 @@ const ViewCompositionPage = () => {
               {composition.tracks?.map((track) => (
                 <div key={track.id}>
                   <h4>{track.name}</h4>
-                  <audio controls>
+                  <label htmlFor={`activate-track-${track.id}`}>
+                    Activate song
+                  </label>
+                  <input
+                    type="checkbox"
+                    id={`activate-track-${track.id}`}
+                    // {...trackFormProps[track.id]}
+                    {...register(`activeTracks.${track.id}`)}
+                  />
+                  <audio controls id={`track-${track.id}`}>
                     <source
                       src={`${process.env.NEXT_PUBLIC_TRACKS_SERVER}/${track.id}.mp3`}
                       type="audio/mpeg"
@@ -38,6 +81,8 @@ const ViewCompositionPage = () => {
                   </audio>
                 </div>
               ))}
+              <button onClick={playSelected}>Play active tracks</button>
+              <button onClick={stopAll}>Stop all tracks</button>
             </div>
           </>
         )}

@@ -14,5 +14,4 @@ enjoy development
 # TODO
 
 - use some actual bucket, like s3 / etc
-- make the tracks selectable and playable simultaneously
 - invalidate data on mutations for better UX
