@@ -1,3 +1,4 @@
+import { Button, Container, Stack, Title } from "@mantine/core";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { FC, PropsWithChildren } from "react";
@@ -14,15 +15,14 @@ const AuthGuard: FC<PropsWithChildren<AuthGuardProps>> = ({
   if (status === "unauthenticated") {
     if (CustomError) return <CustomError />;
     return (
-      <div>
-        <p>You must be logged in in order to view this page.</p>
-        <p>
-          Log in:
+      <Container>
+        <Stack>
+          <Title>You must be logged in in order to view this page.</Title>
           <Link href="/api/auth/signin">
-            <button>here</button>
+            <Button>Log in here</Button>
           </Link>
-        </p>
-      </div>
+        </Stack>
+      </Container>
     );
   }
   return <>{children}</>;
