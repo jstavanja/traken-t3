@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Composition } from "@prisma/client";
+import { Composition, Track } from "@prisma/client";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { FC } from "react";
@@ -110,6 +110,47 @@ const EditCompositionForm: FC<EditCompositionFormProps> = ({
   );
 };
 
+interface TracksListProps {
+  compositionId: string;
+  tracks: Track[];
+}
+
+const TracksList: FC<TracksListProps> = ({ compositionId, tracks }) => {
+  const { mutateAsync: deleteTrackMutation } =
+    trpc.useMutation("tracks.delete");
+
+  const deleteTrack = async (id: string) => {
+    await deleteTrackMutation({
+      compositionId,
+      id,
+    });
+  };
+
+  return (
+    <div>
+      {tracks.map((track) => (
+        <div key={track.id}>
+          <div
+            style={{
+              display: "flex",
+            }}
+          >
+            <h4>{track.name}</h4>
+            <button onClick={() => deleteTrack(track.id)}>Delete track</button>
+          </div>
+          <audio controls>
+            <source
+              src={`${process.env.NEXT_PUBLIC_TRACKS_SERVER}/${track.id}.mp3`}
+              type="audio/mpeg"
+            />
+            Your browser does not support the audio element.
+          </audio>
+        </div>
+      ))}
+    </div>
+  );
+};
+
 const EditCompositionPage = () => {
   const router = useRouter();
   const compositionId = router.query.id as string;
@@ -143,20 +184,10 @@ const EditCompositionPage = () => {
             <hr />
 
             <h2>All tracks in composition</h2>
-            <div>
-              {composition.tracks?.map((track) => (
-                <div key={track.id}>
-                  <h4>{track.name}</h4>
-                  <audio controls>
-                    <source
-                      src={`${process.env.NEXT_PUBLIC_TRACKS_SERVER}/${track.id}.mp3`}
-                      type="audio/mpeg"
-                    />
-                    Your browser does not support the audio element.
-                  </audio>
-                </div>
-              ))}
-            </div>
+            <TracksList
+              compositionId={compositionId}
+              tracks={composition.tracks}
+            />
           </>
         )}
       </div>
