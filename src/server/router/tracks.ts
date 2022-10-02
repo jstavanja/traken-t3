@@ -1,14 +1,13 @@
 import { PrismaClient } from "@prisma/client";
 import { z } from "zod";
+import {
+  editTrackSchema,
+  trackNameValidator,
+} from "../../utils/validations/track";
 import { createProtectedRouter, createRouter } from "./context";
 
 // Example router with queries that can only be hit if the user requesting is signed in
 export const tracksRouter = createProtectedRouter() // TODO: use protected router later
-  .query("getAll", {
-    async resolve({ ctx }) {
-      return await ctx.prisma.track.findMany();
-    },
-  })
   .mutation("createAndGetFilename", {
     input: z.object({
       name: z.string(),
@@ -74,14 +73,39 @@ export const tracksRouter = createProtectedRouter() // TODO: use protected route
         }
       );
 
-      console.log(deleteFileResult);
-
       if (deleteFileResult.status !== 200)
         throw new Error("Could not delete the track files");
 
       return await ctx.prisma.track.delete({
         where: {
           id: input.id,
+        },
+      });
+    },
+  })
+  .mutation("edit", {
+    input: z.object({
+      id: z.string(),
+      name: trackNameValidator,
+      compositionId: z.string(), // needed to check whether current user owns composition
+    }),
+    async resolve({ ctx, input }) {
+      if (
+        !checkIfUserHasPermissionsToTinkerWithComposition(
+          ctx.prisma,
+          ctx.session.user.id,
+          input.compositionId
+        )
+      ) {
+        throw new Error("You are not authorized to alter this composition");
+      }
+
+      return await ctx.prisma.track.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          name: input.name,
         },
       });
     },

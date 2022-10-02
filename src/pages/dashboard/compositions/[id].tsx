@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Composition, Track } from "@prisma/client";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { FC } from "react";
+import { FC, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import AuthGuard from "../../../components/AuthGuard";
@@ -10,7 +10,10 @@ import AuthError from "../../../components/dashboard/AuthError";
 import { trpc } from "../../../utils/trpc";
 import { editCompositionSchema } from "../../../utils/validations/compositions";
 
-import { newTrackSchema } from "../../../utils/validations/track";
+import {
+  editTrackSchema,
+  newTrackSchema,
+} from "../../../utils/validations/track";
 
 interface AddTrackFormProps {
   compositionId: string;
@@ -116,28 +119,11 @@ interface TracksListProps {
 }
 
 const TracksList: FC<TracksListProps> = ({ compositionId, tracks }) => {
-  const { mutateAsync: deleteTrackMutation } =
-    trpc.useMutation("tracks.delete");
-
-  const deleteTrack = async (id: string) => {
-    await deleteTrackMutation({
-      compositionId,
-      id,
-    });
-  };
-
   return (
     <div>
       {tracks.map((track) => (
         <div key={track.id}>
-          <div
-            style={{
-              display: "flex",
-            }}
-          >
-            <h4>{track.name}</h4>
-            <button onClick={() => deleteTrack(track.id)}>Delete track</button>
-          </div>
+          <EditTrackControls track={track} compositionId={compositionId} />
           <audio controls>
             <source
               src={`${process.env.NEXT_PUBLIC_TRACKS_SERVER}/${track.id}.mp3`}
@@ -148,6 +134,85 @@ const TracksList: FC<TracksListProps> = ({ compositionId, tracks }) => {
         </div>
       ))}
     </div>
+  );
+};
+
+interface EditTrackControlsProps {
+  track: Track;
+  compositionId: string;
+}
+
+const EditTrackControls: FC<EditTrackControlsProps> = ({
+  compositionId,
+  track,
+}) => {
+  const { mutateAsync: deleteTrackMutation } =
+    trpc.useMutation("tracks.delete");
+
+  const deleteTrack = async (id: string) => {
+    await deleteTrackMutation({
+      compositionId,
+      id,
+    });
+  };
+  return (
+    <div
+      style={{
+        display: "flex",
+      }}
+    >
+      <EditableTrackName track={track} compositionId={compositionId} />
+      <button onClick={() => deleteTrack(track.id)}>Delete track</button>
+    </div>
+  );
+};
+
+interface EditableTrackNameProps {
+  track: Track;
+  compositionId: string;
+}
+
+const EditableTrackName: FC<EditableTrackNameProps> = ({
+  track,
+  compositionId,
+}) => {
+  const [editing, setEditing] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<z.infer<typeof editTrackSchema>>({
+    resolver: zodResolver(editTrackSchema),
+    defaultValues: track,
+  });
+
+  const { mutateAsync: editTrackMutation } = trpc.useMutation("tracks.edit");
+
+  const onEditTrackSubmit = handleSubmit(async (values) => {
+    await editTrackMutation({
+      name: values.name,
+      compositionId: compositionId,
+      id: track.id,
+    });
+
+    setEditing(false);
+  });
+
+  if (editing) {
+    return (
+      <form onSubmit={onEditTrackSubmit}>
+        <input type="text" {...register("name")} />
+        {errors.name && <p>{errors.name?.message}</p>}
+        <button type="submit">Edit</button>
+      </form>
+    );
+  }
+  return (
+    <>
+      <h4>{track.name}</h4>
+      <button onClick={() => setEditing(true)}>Edit name</button>
+    </>
   );
 };
 
