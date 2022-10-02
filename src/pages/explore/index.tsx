@@ -1,17 +1,8 @@
 import type { NextPage } from "next";
 import Head from "next/head";
-import Link from "next/link";
 import { trpc } from "../../utils/trpc";
-import {
-  createStyles,
-  SimpleGrid,
-  Card,
-  Text,
-  Container,
-  Title,
-} from "@mantine/core";
-import { Composition } from "@prisma/client";
-import { FC } from "react";
+import { Container, Title } from "@mantine/core";
+import { CompositionsGrid } from "../../components/compositions/CompositionsGrid";
 
 const Home: NextPage = () => {
   const { data: compositions } = trpc.useQuery(["compositions.getAll"]);
@@ -32,51 +23,3 @@ const Home: NextPage = () => {
 };
 
 export default Home;
-
-const useStyles = createStyles((theme) => ({
-  card: {
-    transition: "transform 150ms ease, box-shadow 150ms ease",
-    boxShadow: theme.shadows.xs,
-
-    "&:hover": {
-      transform: "scale(1.01)",
-      boxShadow: theme.shadows.md,
-    },
-  },
-
-  title: {
-    fontFamily: `Greycliff CF, ${theme.fontFamily}`,
-    fontWeight: 600,
-  },
-}));
-
-interface CompositionsGridProps {
-  compositions: Composition[];
-}
-
-export const CompositionsGrid: FC<CompositionsGridProps> = ({
-  compositions,
-}) => {
-  const { classes } = useStyles();
-
-  const cards = compositions.map((composition) => (
-    <Link href={`/explore/${composition.id}`} key={composition.name}>
-      <Card p="md" radius="md" component="a" href="#" className={classes.card}>
-        <Text className={classes.title} mt={5}>
-          {composition.name}
-        </Text>
-        <Text color="dimmed" size="xs" weight={700} mt="md">
-          {composition.description}
-        </Text>
-      </Card>
-    </Link>
-  ));
-
-  return (
-    <Container py="xl">
-      <SimpleGrid cols={1} breakpoints={[{ maxWidth: "sm", cols: 1 }]}>
-        {cards}
-      </SimpleGrid>
-    </Container>
-  );
-};
