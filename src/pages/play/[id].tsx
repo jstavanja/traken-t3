@@ -1,3 +1,4 @@
+import { Button, Container, Group, Paper, Stack, Title } from "@mantine/core";
 import { useRouter } from "next/router";
 import AuthGuard from "../../components/AuthGuard";
 import { trpc } from "../../utils/trpc";
@@ -33,12 +34,14 @@ const ViewCompositionPage = () => {
 
   return (
     <AuthGuard>
-      <div>
+      <Container>
         {composition && (
           <>
-            <h1>Viewing composition: {composition.name}</h1>
-            <h2>All tracks in composition</h2>
-            <div>
+            <Stack mb="xl">
+              <Title size="h1">Viewing composition: {composition.name}</Title>
+              <Title size="h2">All tracks in composition</Title>
+            </Stack>
+            <Paper withBorder p="xl">
               {composition.tracks?.map((track) => (
                 <div key={track.id}>
                   <h4>{track.name}</h4>
@@ -51,9 +54,15 @@ const ViewCompositionPage = () => {
                   </audio>
                 </div>
               ))}
-              <button onClick={playAll}>Play active tracks</button>
-              <button onClick={stopAll}>Stop and reset all tracks</button>
-            </div>
+            </Paper>
+            <Group mt="xl">
+              <Button color="green" onClick={playAll}>
+                Play active tracks
+              </Button>
+              <Button color="gray" onClick={stopAll}>
+                Stop and reset all tracks
+              </Button>
+            </Group>
           </>
         )}
         {error && (
@@ -61,7 +70,7 @@ const ViewCompositionPage = () => {
             You do not have permissions to view this composition and its tracks.
           </p>
         )}
-      </div>
+      </Container>
     </AuthGuard>
   );
 };
