@@ -64,7 +64,7 @@ const ViewCompositionPage = () => {
                 <div key={track.id}>
                   <h4>{track.name}</h4>
                   <label htmlFor={`activate-track-${track.id}`}>
-                    Activate song
+                    Track active
                   </label>
                   <input
                     type="checkbox"
