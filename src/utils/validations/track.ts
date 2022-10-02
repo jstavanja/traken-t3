@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const MAX_FILE_SIZE = 1000000;
+const MAX_FILE_SIZE = 10000000;
 const ACCEPTED_IMAGE_TYPES = ["audio/mpeg"];
 
 export const trackNameValidator = z.string().min(1, "Track name is required");
