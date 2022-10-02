@@ -1,10 +1,11 @@
 import { useRouter } from "next/router";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm, zodResolver } from "@mantine/form";
 import { trpc } from "../../../utils/trpc";
 import { newCompositionSchema } from "../../../utils/validations/compositions";
 import AuthError from "../../../components/dashboard/AuthError";
 import AuthGuard from "../../../components/AuthGuard";
+import { Button, Container, Stack, Title } from "@mantine/core";
+import { TextInput } from "../../../components/blocks/TextInput";
 
 interface NewCompositionData {
   name: string;
@@ -12,18 +13,14 @@ interface NewCompositionData {
 }
 
 const NewCompositionForm = () => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<NewCompositionData>({
-    resolver: zodResolver(newCompositionSchema),
+  const form = useForm<NewCompositionData>({
+    validate: zodResolver(newCompositionSchema),
   });
 
   const mutation = trpc.useMutation("dashboardCompositions.create");
   const router = useRouter();
 
-  const onSubmit = handleSubmit(async (data) => {
+  const onSubmit = form.onSubmit(async (data) => {
     await mutation.mutate(data);
 
     router.push("/dashboard/compositions");
@@ -31,11 +28,21 @@ const NewCompositionForm = () => {
 
   return (
     <form onSubmit={onSubmit}>
-      <input {...register("name")} placeholder="Name" />
-      <p>{errors.name?.message}</p>
-      <input {...register("description")} placeholder="Description" />
-      <p>{errors.description?.message}</p>
-      <button>Create new composition</button>
+      <Stack>
+        <TextInput
+          label="Name"
+          placeholder="Cool song"
+          {...form.getInputProps("name")}
+        />
+        {form.errors.name && <p>{form.errors.name}</p>}
+        <TextInput
+          label="Description"
+          placeholder="This is my new cool jam!"
+          {...form.getInputProps("description")}
+        />
+        {form.errors.description && <p>{form.errors.description}</p>}
+        <Button type="submit">Create new composition</Button>
+      </Stack>
     </form>
   );
 };
@@ -43,10 +50,10 @@ const NewCompositionForm = () => {
 const NewCompositionPage = () => {
   return (
     <AuthGuard CustomError={AuthError}>
-      <div>
-        <h1>Create new composition</h1>
+      <Container>
+        <Title size="h1">Create new composition</Title>
         <NewCompositionForm />
-      </div>
+      </Container>
     </AuthGuard>
   );
 };
