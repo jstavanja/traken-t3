@@ -1,5 +1,6 @@
 import { createStyles, Title, Text, Button, Container } from "@mantine/core";
 import Link from "next/link";
+import { FC } from "react";
 
 const useStyles = createStyles((theme) => ({
   wrapper: {
@@ -74,18 +75,31 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-export const WelcomeHero = () => {
+interface WelcomeHeroProps {
+  heroText: {
+    prefix?: string;
+    text: string;
+    postfix?: string;
+  };
+  actions: {
+    color?: string;
+    text: string;
+    href: string;
+  }[];
+}
+
+export const WelcomeHero: FC<WelcomeHeroProps> = ({ heroText, actions }) => {
   const { classes } = useStyles();
 
   return (
     <Container className={classes.wrapper} size={1400}>
       <div className={classes.inner}>
         <Title className={classes.title}>
-          Take a track and{" "}
+          {heroText.prefix}{" "}
           <Text component="span" className={classes.highlight} inherit>
-            jam along
+            {heroText.text}
           </Text>{" "}
-          by disabling any instrument!
+          {heroText.postfix}
         </Title>
 
         <Container p={0} size={600}>
@@ -97,21 +111,19 @@ export const WelcomeHero = () => {
         </Container>
 
         <div className={classes.controls}>
-          <Link href="/explore">
-            <Button
-              className={classes.control}
-              size="lg"
-              variant="default"
-              color="gray"
-            >
-              Explore compositions
-            </Button>
-          </Link>
-          <Link href="/api/auth/signin">
-            <Button className={classes.control} size="lg">
-              Sign in
-            </Button>
-          </Link>
+          {actions.map((action) => {
+            return (
+              <Link href={action.href} key={action.href}>
+                <Button
+                  className={classes.control}
+                  size="lg"
+                  color={action.color}
+                >
+                  {action.text}
+                </Button>
+              </Link>
+            );
+          })}
         </div>
       </div>
     </Container>
