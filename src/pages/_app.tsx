@@ -7,6 +7,7 @@ import superjson from "superjson";
 import type { AppType } from "next/app";
 import type { AppRouter } from "../server/router";
 import type { Session } from "next-auth";
+import { MantineProvider } from "@mantine/core";
 import "../styles/globals.css";
 import DefaultLayout from "../layouts/default";
 
@@ -15,11 +16,13 @@ const MyApp: AppType<{ session: Session | null }> = ({
   pageProps: { session, ...pageProps },
 }) => {
   return (
-    <SessionProvider session={session}>
-      <DefaultLayout>
-        <Component {...pageProps} />
-      </DefaultLayout>
-    </SessionProvider>
+    <MantineProvider withGlobalStyles withNormalizeCSS>
+      <SessionProvider session={session}>
+        <DefaultLayout>
+          <Component {...pageProps} />
+        </DefaultLayout>
+      </SessionProvider>
+    </MantineProvider>
   );
 };
 
