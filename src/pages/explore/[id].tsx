@@ -42,7 +42,7 @@ const ViewCompositionPage = () => {
             <h1>Viewing composition: {composition.name}</h1>
             <h2>All tracks in composition</h2>
             {composition.currentUserHasAccess && (
-              <Link href={`/compositions/play/${composition.id}`}>
+              <Link href={`/play/${composition.id}`}>
                 <button>Play this composition</button>
               </Link>
             )}

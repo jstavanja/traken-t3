@@ -24,7 +24,7 @@ const Home: NextPage = () => {
                 }}
                 key={composition.id}
               >
-                <Link href={`/compositions/${composition.id}`} passHref>
+                <Link href={`/explore/${composition.id}`} passHref>
                   <a>
                     <h3>{composition.name}</h3>
                   </a>

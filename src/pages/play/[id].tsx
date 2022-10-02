@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
-import AuthGuard from "../../../components/AuthGuard";
-import { trpc } from "../../../utils/trpc";
+import AuthGuard from "../../components/AuthGuard";
+import { trpc } from "../../utils/trpc";
 
 const ViewCompositionPage = () => {
   const router = useRouter();
