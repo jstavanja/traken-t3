@@ -1,17 +1,18 @@
-import { createStyles, Title, Text, Button, Container } from "@mantine/core";
+import {
+  createStyles,
+  Title,
+  Text,
+  Button,
+  Container,
+  Center,
+} from "@mantine/core";
 import Link from "next/link";
+import Image from "next/image";
 import { FC } from "react";
 
 const useStyles = createStyles((theme) => ({
   wrapper: {
     position: "relative",
-    paddingTop: 120,
-    paddingBottom: 80,
-
-    "@media (max-width: 755px)": {
-      paddingTop: 80,
-      paddingBottom: 60,
-    },
   },
 
   inner: {
@@ -94,6 +95,15 @@ export const WelcomeHero: FC<WelcomeHeroProps> = ({ heroText, actions }) => {
   return (
     <Container className={classes.wrapper} size={1400}>
       <div className={classes.inner}>
+        <Center mb="xl">
+          <Image
+            src="/big-logo-with-bg.jpeg"
+            height="400px"
+            width="400px"
+            alt="Big traken logo with background"
+          />
+        </Center>
+
         <Title className={classes.title}>
           {heroText.prefix}{" "}
           <Text component="span" className={classes.highlight} inherit>

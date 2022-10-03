@@ -16,6 +16,7 @@ import { IconLogout, IconChevronDown } from "@tabler/icons";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import Image from "next/image";
 
 const useStyles = createStyles((theme) => ({
   header: {
@@ -27,7 +28,7 @@ const useStyles = createStyles((theme) => ({
     borderBottom: `1px solid ${
       theme.colorScheme === "dark" ? "transparent" : theme.colors.gray?.[2]
     }`,
-    marginBottom: 120,
+    marginBottom: 20,
   },
 
   mainSection: {
@@ -126,7 +127,14 @@ export const DefaultHeader = () => {
       <Container className={classes.mainSection}>
         <Group position="apart">
           <Link href="/" passHref>
-            <a>Traken</a>
+            <a>
+              <Image
+                src={"/logo.png"}
+                alt="Traken logo with a DJ on the picture"
+                height="60px"
+                width="200px"
+              />
+            </a>
           </Link>
 
           <Burger
