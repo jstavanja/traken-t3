@@ -6,6 +6,7 @@ import AuthError from "../../../components/dashboard/AuthError";
 import AuthGuard from "../../../components/AuthGuard";
 import { Button, Container, Stack, Title } from "@mantine/core";
 import { TextInput } from "../../../components/blocks/TextInput";
+import Head from "next/head";
 
 interface NewCompositionData {
   name: string;
@@ -53,12 +54,17 @@ const NewCompositionForm = () => {
 
 const NewCompositionPage = () => {
   return (
-    <AuthGuard CustomError={AuthError}>
-      <Container>
-        <Title size="h1">Create new composition</Title>
-        <NewCompositionForm />
-      </Container>
-    </AuthGuard>
+    <>
+      <Head>
+        <title>Traken - Create a new composition</title>
+      </Head>
+      <AuthGuard CustomError={AuthError}>
+        <Container>
+          <Title size="h1">Create new composition</Title>
+          <NewCompositionForm />
+        </Container>
+      </AuthGuard>
+    </>
   );
 };
 

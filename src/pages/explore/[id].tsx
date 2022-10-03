@@ -2,18 +2,11 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import AuthGuard from "../../components/AuthGuard";
 import { trpc } from "../../utils/trpc";
-import { Table, Button, Container } from "@mantine/core";
+import { Button, Container } from "@mantine/core";
 
 import { createStyles, Group, Paper, SimpleGrid, Text } from "@mantine/core";
-import {
-  IconUserPlus,
-  IconDiscount2,
-  IconReceipt2,
-  IconCoin,
-  IconArrowUpRight,
-  IconArrowDownRight,
-  IconMusic,
-} from "@tabler/icons";
+import { IconMusic } from "@tabler/icons";
+import Head from "next/head";
 
 const useStyles = createStyles((theme) => ({
   root: {
@@ -116,32 +109,37 @@ const ViewCompositionPage = () => {
   };
 
   return (
-    <AuthGuard>
-      <Container>
-        {composition && (
-          <>
-            <Group>
-              <h1>Viewing composition: {composition.name}</h1>
-              {composition.currentUserHasAccess && (
-                <Link href={`/play/${composition.id}`}>
-                  <Button>Play this composition</Button>
-                </Link>
-              )}
-              {!composition.currentUserHasAccess && (
-                <button onClick={buyComposition}>Buy this composition</button>
-              )}
-            </Group>
-            <h2>All tracks in composition</h2>
-            <TracksGrid
-              data={composition.tracks.map((track) => ({
-                title: track.name,
-                icon: "music",
-              }))}
-            />
-          </>
-        )}
-      </Container>
-    </AuthGuard>
+    <>
+      <Head>
+        <title>Traken - Previewing {composition?.name ?? "..."}</title>
+      </Head>
+      <AuthGuard>
+        <Container>
+          {composition && (
+            <>
+              <Group>
+                <h1>Viewing composition: {composition.name}</h1>
+                {composition.currentUserHasAccess && (
+                  <Link href={`/play/${composition.id}`}>
+                    <Button>Play this composition</Button>
+                  </Link>
+                )}
+                {!composition.currentUserHasAccess && (
+                  <button onClick={buyComposition}>Buy this composition</button>
+                )}
+              </Group>
+              <h2>All tracks in composition</h2>
+              <TracksGrid
+                data={composition.tracks.map((track) => ({
+                  title: track.name,
+                  icon: "music",
+                }))}
+              />
+            </>
+          )}
+        </Container>
+      </AuthGuard>
+    </>
   );
 };
 

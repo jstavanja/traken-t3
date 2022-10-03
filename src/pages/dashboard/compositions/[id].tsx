@@ -22,6 +22,7 @@ import {
   Title,
 } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
+import Head from "next/head";
 
 interface AddTrackFormProps {
   compositionId: string;
@@ -247,35 +248,40 @@ const EditCompositionPage = () => {
   );
 
   return (
-    <AuthGuard CustomError={AuthError}>
-      <Container>
-        {error && <h1>Cannot edit composition that is not yours.</h1>}
-        {!error && composition && (
-          <>
-            <Group position="apart">
-              <Title>Editing &quot;{composition.name}&quot;</Title>
-              <Link href="/dashboard/compositions">
-                <Button>Go back to your compositions</Button>
-              </Link>
-            </Group>
-            <Paper radius="md" p="xl" withBorder mt="xl">
-              <h2>Edit description metadata</h2>
-              <EditCompositionForm currentCompositionData={composition} />
-            </Paper>
-            <Paper radius="md" p="xl" withBorder mt="xl">
-              <h2>Add a track</h2>
-              <AddTrackForm compositionId={compositionId} />
-            </Paper>
+    <>
+      <Head>
+        <title>Traken - Editing {composition?.name ?? "..."}</title>
+      </Head>
+      <AuthGuard CustomError={AuthError}>
+        <Container>
+          {error && <h1>Cannot edit composition that is not yours.</h1>}
+          {!error && composition && (
+            <>
+              <Group position="apart">
+                <Title>Editing &quot;{composition.name}&quot;</Title>
+                <Link href="/dashboard/compositions">
+                  <Button>Go back to your compositions</Button>
+                </Link>
+              </Group>
+              <Paper radius="md" p="xl" withBorder mt="xl">
+                <h2>Edit description metadata</h2>
+                <EditCompositionForm currentCompositionData={composition} />
+              </Paper>
+              <Paper radius="md" p="xl" withBorder mt="xl">
+                <h2>Add a track</h2>
+                <AddTrackForm compositionId={compositionId} />
+              </Paper>
 
-            <h2>All tracks in composition</h2>
-            <TracksList
-              compositionId={compositionId}
-              tracks={composition.tracks}
-            />
-          </>
-        )}
-      </Container>
-    </AuthGuard>
+              <h2>All tracks in composition</h2>
+              <TracksList
+                compositionId={compositionId}
+                tracks={composition.tracks}
+              />
+            </>
+          )}
+        </Container>
+      </AuthGuard>
+    </>
   );
 };
 
