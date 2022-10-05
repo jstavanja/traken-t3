@@ -1,12 +1,15 @@
 import { Button, Container, Group, Paper, Stack, Title } from "@mantine/core";
 import Head from "next/head";
 import { useRouter } from "next/router";
+import { useState } from "react";
 import AuthGuard from "../../components/AuthGuard";
 import { trpc } from "../../utils/trpc";
 
 const ViewCompositionPage = () => {
   const router = useRouter();
   const compositionId = router.query.id as string;
+
+  const [isPlaying, setIsPlaying] = useState(false);
 
   const { data: composition, error } = trpc.useQuery(
     [
@@ -21,15 +24,24 @@ const ViewCompositionPage = () => {
   );
 
   const playAll = () => {
+    setIsPlaying(true);
     document.querySelectorAll("audio").forEach((audioElement) => {
       audioElement.play();
     });
   };
 
   const stopAll = () => {
+    setIsPlaying(false);
     document.querySelectorAll("audio").forEach((audioElement) => {
       audioElement.pause();
       audioElement.currentTime = 0.0;
+    });
+  };
+
+  const pauseAll = () => {
+    setIsPlaying(false);
+    document.querySelectorAll("audio").forEach((audioElement) => {
+      audioElement.pause();
     });
   };
 
@@ -58,9 +70,16 @@ const ViewCompositionPage = () => {
                 ))}
               </Paper>
               <Group mt="xl">
-                <Button color="green" onClick={playAll}>
-                  Play active tracks
-                </Button>
+                {!isPlaying && (
+                  <Button color="green" onClick={playAll}>
+                    Play active tracks
+                  </Button>
+                )}
+                {isPlaying && (
+                  <Button color="orange" onClick={pauseAll}>
+                    Pause all tracks
+                  </Button>
+                )}
                 <Button color="gray" onClick={stopAll}>
                   Stop and reset all tracks
                 </Button>
