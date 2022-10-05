@@ -1,4 +1,3 @@
-import { Track } from "@prisma/client";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { FC, useState } from "react";
@@ -11,10 +10,11 @@ import Head from "next/head";
 import { AddTrackForm } from "../../../components/forms/AddTrackForm";
 import { EditCompositionForm } from "../../../components/forms/EditCompositionForm";
 import { EditTrackNameForm } from "../../../components/forms/EditTrackNameForm";
+import { TrackWithURL } from "../../../types/compositions";
 
 interface TracksListProps {
   compositionId: string;
-  tracks: Track[];
+  tracks: TrackWithURL[];
 }
 
 const TracksList: FC<TracksListProps> = ({ compositionId, tracks }) => {
@@ -24,10 +24,7 @@ const TracksList: FC<TracksListProps> = ({ compositionId, tracks }) => {
         <div key={track.id}>
           <EditTrackControls track={track} compositionId={compositionId} />
           <audio controls>
-            <source
-              src={`${process.env.NEXT_PUBLIC_TRACKS_SERVER}/${track.id}.mp3`}
-              type="audio/mpeg"
-            />
+            <source src={track.url} type="audio/mpeg" />
             Your browser does not support the audio element.
           </audio>
         </div>
@@ -37,7 +34,7 @@ const TracksList: FC<TracksListProps> = ({ compositionId, tracks }) => {
 };
 
 interface EditTrackControlsProps {
-  track: Track;
+  track: TrackWithURL;
   compositionId: string;
 }
 
@@ -65,7 +62,7 @@ const EditTrackControls: FC<EditTrackControlsProps> = ({
 };
 
 interface EditableTrackNameProps {
-  track: Track;
+  track: TrackWithURL;
   compositionId: string;
 }
 

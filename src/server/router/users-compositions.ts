@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { addURLsToCompositionTracks } from "../../utils/compositions";
 import { createProtectedRouter } from "./context";
 
 export const usersCompositions = createProtectedRouter()
@@ -37,7 +38,7 @@ export const usersCompositions = createProtectedRouter()
       const userId = ctx.session.user.id;
 
       // check if user can access the tracks
-      const trackThatTheUserCanAccessFully =
+      const compositionThatTheUserCanAccessFully =
         await ctx.prisma.composition.findFirst({
           where: {
             AND: [
@@ -67,11 +68,11 @@ export const usersCompositions = createProtectedRouter()
           },
         });
 
-      if (!trackThatTheUserCanAccessFully)
+      if (!compositionThatTheUserCanAccessFully)
         throw new Error(
           "You don't have the permission to access the tracks of this composition"
         );
 
-      return trackThatTheUserCanAccessFully;
+      return addURLsToCompositionTracks(compositionThatTheUserCanAccessFully);
     },
   });

@@ -51,10 +51,7 @@ const ViewCompositionPage = () => {
                   <div key={track.id}>
                     <h4>{track.name}</h4>
                     <audio controls id={`track-${track.id}`}>
-                      <source
-                        src={`${process.env.NEXT_PUBLIC_TRACKS_SERVER}/${track.id}.mp3`}
-                        type="audio/mpeg"
-                      />
+                      <source src={track.url} type="audio/mpeg" />
                       Your browser does not support the audio element.
                     </audio>
                   </div>

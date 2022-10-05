@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { addURLsToCompositionTracks } from "../../utils/compositions";
 import {
   editCompositionSchema,
   newCompositionSchema,
@@ -33,7 +34,7 @@ export const dashboardCompositionsRouter = createProtectedRouter()
     async resolve({ ctx, input }) {
       const user = ctx.session.user;
 
-      return await ctx.prisma.composition.findFirstOrThrow({
+      const composition = await ctx.prisma.composition.findFirstOrThrow({
         where: {
           id: input.id,
           User: {
@@ -44,6 +45,8 @@ export const dashboardCompositionsRouter = createProtectedRouter()
           tracks: true,
         },
       });
+
+      return addURLsToCompositionTracks(composition);
     },
   })
   .mutation("create", {

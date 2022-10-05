@@ -33,10 +33,21 @@ export const AddTrackForm: FC<AddTrackFormProps> = ({ compositionId }) => {
       compositionId,
     });
 
-    const formData = new FormData();
-    formData.set("file", values.file);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const data: Record<string, any> = {
+      ...newTrack.trackUploadInfo.fields,
+      "Content-Type": "audio/mpeg",
+    };
 
-    await fetch(`/api/upload-track?filename=${newTrack.fileName}`, {
+    const formData = new FormData();
+
+    for (const name in data) {
+      formData.append(name, data[name]);
+    }
+
+    formData.append("file", values.file);
+
+    await fetch(newTrack.trackUploadInfo.url, {
       method: "POST",
       body: formData,
     });

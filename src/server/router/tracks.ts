@@ -1,10 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 import { z } from "zod";
-import {
-  editTrackSchema,
-  trackNameValidator,
-} from "../../utils/validations/track";
-import { createProtectedRouter, createRouter } from "./context";
+import { trackNameValidator } from "../../utils/validations/track";
+import { createProtectedRouter } from "./context";
+import S3 from "aws-sdk/clients/s3";
 
 // Example router with queries that can only be hit if the user requesting is signed in
 export const tracksRouter = createProtectedRouter() // TODO: use protected router later
@@ -43,10 +41,28 @@ export const tracksRouter = createProtectedRouter() // TODO: use protected route
         },
       });
 
-      console.log("created track");
+      const s3 = new S3({
+        apiVersion: "2006-03-01",
+        accessKeyId: process.env.S3_ACCESS_KEY_ID,
+        secretAccessKey: process.env.S3_SECRET_KEY,
+        endpoint: process.env.S3_ENDPOINT,
+      });
+
+      const trackUploadInfo = await s3.createPresignedPost({
+        Bucket: process.env.S3_BUCKET_NAME,
+        Fields: {
+          key: `${input.compositionId}/${input.name}`,
+          "Content-Type": "audio/mpeg",
+        },
+        Expires: 60, // seconds
+        Conditions: [
+          ["content-length-range", 0, 10485760], // up to 10 MB
+        ],
+      });
 
       return {
         fileName: track.id,
+        trackUploadInfo,
       };
     },
   })
