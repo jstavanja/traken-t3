@@ -7,10 +7,10 @@ import superjson from "superjson";
 import type { AppType } from "next/app";
 import type { AppRouter } from "../server/router";
 import type { Session } from "next-auth";
-import { MantineProvider } from "@mantine/core";
 import "../styles/globals.css";
 import DefaultLayout from "../layouts/default";
 import Head from "next/head";
+import { MantineProviderWithTheme } from "../contexts/MantineProviderWithTheme";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -44,13 +44,13 @@ const MyApp: AppType<{ session: Session | null }> = ({
         <meta name="msapplication-TileColor" content="#da532c" />
         <meta name="theme-color" content="#ffffff"></meta>
       </Head>
-      <MantineProvider withGlobalStyles withNormalizeCSS>
+      <MantineProviderWithTheme>
         <SessionProvider session={session}>
           <DefaultLayout>
             <Component {...pageProps} />
           </DefaultLayout>
         </SessionProvider>
-      </MantineProvider>
+      </MantineProviderWithTheme>
     </>
   );
 };

@@ -10,6 +10,8 @@ import {
   Tabs,
   Burger,
   Button,
+  ActionIcon,
+  useMantineColorScheme,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { IconLogout, IconChevronDown } from "@tabler/icons";
@@ -17,6 +19,7 @@ import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import Image from "next/image";
+import { ColorThemeSwitcher } from "../ColorSchemeSwitcher";
 
 const useStyles = createStyles((theme) => ({
   header: {
@@ -117,6 +120,7 @@ export const DefaultHeader = () => {
   const { classes, cx } = useStyles();
   const [opened, { toggle }] = useDisclosure(false);
   const [userMenuOpened, setUserMenuOpened] = useState(false);
+  const { colorScheme } = useMantineColorScheme();
 
   const { data: session, status } = useSession();
 
@@ -129,7 +133,7 @@ export const DefaultHeader = () => {
           <Link href="/" passHref>
             <a>
               <Image
-                src={"/logo.png"}
+                src={colorScheme === "light" ? "/logo.png" : "/logo-bright.png"}
                 alt="Traken logo with a DJ on the picture"
                 height="60px"
                 width="200px"
@@ -179,13 +183,16 @@ export const DefaultHeader = () => {
                 </UnstyledButton>
               </Menu.Target>
               <Menu.Dropdown>
-                <Menu.Item
-                  icon={<IconLogout size={14} stroke={1.5} />}
-                  onClick={() => {
-                    signOut();
-                  }}
-                >
-                  Logout
+                <Menu.Item onClick={() => signOut()}>
+                  <Group>
+                    <ActionIcon variant="outline" title="Toggle color scheme">
+                      <IconLogout size={14} stroke={1.5} />
+                    </ActionIcon>
+                    Logout
+                  </Group>
+                </Menu.Item>
+                <Menu.Item>
+                  <ColorThemeSwitcher />
                 </Menu.Item>
               </Menu.Dropdown>
             </Menu>
