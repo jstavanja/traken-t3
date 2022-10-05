@@ -15,6 +15,7 @@ export const addURLsToCompositionTracks = async (
     accessKeyId: process.env.S3_ACCESS_KEY_ID,
     secretAccessKey: process.env.S3_SECRET_KEY,
     endpoint: process.env.S3_ENDPOINT,
+    region: process.env.S3_REGION,
     s3ForcePathStyle: true,
   });
 

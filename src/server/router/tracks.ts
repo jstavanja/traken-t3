@@ -4,6 +4,15 @@ import { trackNameValidator } from "../../utils/validations/track";
 import { createProtectedRouter } from "./context";
 import S3 from "aws-sdk/clients/s3";
 
+const s3 = new S3({
+  apiVersion: "2006-03-01",
+  accessKeyId: process.env.S3_ACCESS_KEY_ID,
+  secretAccessKey: process.env.S3_SECRET_KEY,
+  endpoint: process.env.S3_ENDPOINT,
+  region: process.env.S3_REGION,
+  s3ForcePathStyle: true,
+});
+
 // Example router with queries that can only be hit if the user requesting is signed in
 export const tracksRouter = createProtectedRouter() // TODO: use protected router later
   .mutation("createAndGetFilename", {
@@ -41,13 +50,6 @@ export const tracksRouter = createProtectedRouter() // TODO: use protected route
         },
       });
 
-      const s3 = new S3({
-        apiVersion: "2006-03-01",
-        accessKeyId: process.env.S3_ACCESS_KEY_ID,
-        secretAccessKey: process.env.S3_SECRET_KEY,
-        endpoint: process.env.S3_ENDPOINT,
-      });
-
       const trackUploadInfo = await s3.createPresignedPost({
         Bucket: process.env.S3_BUCKET_NAME,
         Fields: {
@@ -82,21 +84,17 @@ export const tracksRouter = createProtectedRouter() // TODO: use protected route
         throw new Error("You are not authorized to alter this composition");
       }
 
-      const deleteFileResult = await fetch(
-        `http://localhost:3000/api/delete-track?id=${input.id}`,
-        {
-          method: "DELETE",
-        }
-      );
-
-      if (deleteFileResult.status !== 200)
-        throw new Error("Could not delete the track files");
-
-      return await ctx.prisma.track.delete({
+      const deletedTrack = await ctx.prisma.track.delete({
         where: {
           id: input.id,
         },
       });
+      const deleteParams = {
+        Bucket: process.env.S3_BUCKET_NAME as string,
+        Key: `${input.compositionId}/${deletedTrack.name}`,
+      };
+
+      await s3.deleteObject(deleteParams).promise();
     },
   })
   .mutation("edit", {
