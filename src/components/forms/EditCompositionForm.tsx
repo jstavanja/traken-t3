@@ -1,6 +1,8 @@
 import { Stack, TextInput, Button } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
+import { showNotification } from "@mantine/notifications";
 import { Composition } from "@prisma/client";
+import { IconCheck } from "@tabler/icons";
 import { FC } from "react";
 import { trpc } from "../../utils/trpc";
 import { editCompositionSchema } from "../../utils/validations/compositions";
@@ -38,6 +40,14 @@ export const EditCompositionForm: FC<EditCompositionFormProps> = ({
               id: currentCompositionData.id,
             },
           ]);
+
+          showNotification({
+            title: "Composition edited",
+            message: "The data of the composition was succesfully edited! ✏️",
+            autoClose: 3000,
+            color: "green",
+            icon: <IconCheck />,
+          });
         },
       }
     );

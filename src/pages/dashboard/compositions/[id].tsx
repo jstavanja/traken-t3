@@ -11,6 +11,8 @@ import { AddTrackForm } from "../../../components/forms/AddTrackForm";
 import { EditCompositionForm } from "../../../components/forms/EditCompositionForm";
 import { EditTrackNameForm } from "../../../components/forms/EditTrackNameForm";
 import { TrackWithURL } from "../../../types/compositions";
+import { showNotification } from "@mantine/notifications";
+import { IconCheck } from "@tabler/icons";
 
 interface TracksListProps {
   compositionId: string;
@@ -61,6 +63,14 @@ const EditTrackControls: FC<EditTrackControlsProps> = ({
               id: compositionId,
             },
           ]);
+
+          showNotification({
+            title: "Track deleted.",
+            message: `Track ${track.name} was deleted successfully! ✌️`,
+            autoClose: 3000,
+            color: "green",
+            icon: <IconCheck />,
+          });
         },
       }
     );

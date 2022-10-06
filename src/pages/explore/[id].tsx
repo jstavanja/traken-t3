@@ -5,8 +5,9 @@ import { trpc } from "../../utils/trpc";
 import { Button, Container } from "@mantine/core";
 
 import { createStyles, Group, Paper, SimpleGrid, Text } from "@mantine/core";
-import { IconMusic } from "@tabler/icons";
+import { IconCheck, IconMusic } from "@tabler/icons";
 import Head from "next/head";
+import { showNotification } from "@mantine/notifications";
 
 const useStyles = createStyles((theme) => ({
   root: {
@@ -117,6 +118,15 @@ const ViewCompositionPage = () => {
               id: composition.id,
             },
           ]);
+
+          showNotification({
+            title: "Composition acquired.",
+            message:
+              "You now have full access to the composition. Happy jamming! 🤘",
+            autoClose: 3000,
+            color: "green",
+            icon: <IconCheck />,
+          });
         },
       }
     );
