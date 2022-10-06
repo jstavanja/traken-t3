@@ -13,7 +13,7 @@ export const newTrackSchema = z.object({
     .refine((file) => file?.size <= MAX_FILE_SIZE, `Max file size is 10MB.`)
     .refine(
       (file) => ACCEPTED_TRACK_FILE_TYPES.includes(file?.type),
-      ".mp3 files are accepted."
+      "Only .mp3 files are accepted."
     ),
 });
 
