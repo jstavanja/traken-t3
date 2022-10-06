@@ -34,6 +34,8 @@ export const AddTrackForm: FC<AddTrackFormProps> = ({ compositionId }) => {
     "tracks.createAndGetFilename"
   );
 
+  const utils = trpc.useContext();
+
   const onTrackAddSubmit = form.onSubmit(async (values) => {
     if (!values.file) return;
 
@@ -62,6 +64,13 @@ export const AddTrackForm: FC<AddTrackFormProps> = ({ compositionId }) => {
     });
 
     form.reset();
+
+    utils.invalidateQueries([
+      "dashboardCompositions.get",
+      {
+        id: compositionId,
+      },
+    ]);
   });
 
   const theme = useMantineTheme();

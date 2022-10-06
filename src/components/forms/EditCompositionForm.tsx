@@ -21,12 +21,26 @@ export const EditCompositionForm: FC<EditCompositionFormProps> = ({
     "dashboardCompositions.edit"
   );
 
+  const utils = trpc.useContext();
+
   const onEditCompositionSubmit = form.onSubmit(async (values) => {
-    await editCompositionMutation({
-      description: values.description,
-      id: currentCompositionData.id,
-      name: values.name,
-    });
+    await editCompositionMutation(
+      {
+        description: values.description,
+        id: currentCompositionData.id,
+        name: values.name,
+      },
+      {
+        onSuccess: () => {
+          utils.invalidateQueries([
+            "dashboardCompositions.get",
+            {
+              id: currentCompositionData.id,
+            },
+          ]);
+        },
+      }
+    );
   });
 
   return (

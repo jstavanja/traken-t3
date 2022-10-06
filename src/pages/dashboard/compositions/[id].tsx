@@ -45,11 +45,25 @@ const EditTrackControls: FC<EditTrackControlsProps> = ({
   const { mutateAsync: deleteTrackMutation } =
     trpc.useMutation("tracks.delete");
 
+  const utils = trpc.useContext();
+
   const deleteTrack = async (id: string) => {
-    await deleteTrackMutation({
-      compositionId,
-      id,
-    });
+    await deleteTrackMutation(
+      {
+        compositionId,
+        id,
+      },
+      {
+        onSuccess: () => {
+          utils.invalidateQueries([
+            "dashboardCompositions.get",
+            {
+              id: compositionId,
+            },
+          ]);
+        },
+      }
+    );
   };
   return (
     <Group>

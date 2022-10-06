@@ -97,15 +97,29 @@ const ViewCompositionPage = () => {
     "usersCompositions.acquire"
   );
 
+  const utils = trpc.useContext();
+
   const buyComposition = async () => {
     if (!composition) {
       return alert(
         "No composition found. Try again later or contact the support."
       );
     }
-    await acquireCompositionMutation({
-      id: composition?.id,
-    });
+    await acquireCompositionMutation(
+      {
+        id: composition.id,
+      },
+      {
+        onSuccess: () => {
+          utils.invalidateQueries([
+            "compositions.get",
+            {
+              id: composition.id,
+            },
+          ]);
+        },
+      }
+    );
   };
 
   return (
@@ -125,7 +139,7 @@ const ViewCompositionPage = () => {
                   </Link>
                 )}
                 {!composition.currentUserHasAccess && (
-                  <button onClick={buyComposition}>Buy this composition</button>
+                  <Button onClick={buyComposition}>Buy this composition</Button>
                 )}
               </Group>
               <h2>All tracks in composition</h2>

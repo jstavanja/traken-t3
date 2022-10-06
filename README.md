@@ -16,5 +16,3 @@
 enjoy development
 
 # TODO
-
-- invalidate data on mutations for better UX
