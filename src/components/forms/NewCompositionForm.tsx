@@ -1,5 +1,7 @@
 import { Stack, TextInput, Button } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
+import { showNotification } from "@mantine/notifications";
+import { IconCheck } from "@tabler/icons";
 import { useRouter } from "next/router";
 import { trpc } from "../../utils/trpc";
 import { newCompositionSchema } from "../../utils/validations/compositions";
@@ -23,6 +25,14 @@ export const NewCompositionForm = () => {
 
   const onSubmit = form.onSubmit(async (data) => {
     await mutation.mutate(data);
+
+    showNotification({
+      title: "Composition created.",
+      message: "Your new composition was created successfully! 🎼",
+      autoClose: 3000,
+      color: "green",
+      icon: <IconCheck />,
+    });
 
     router.push("/dashboard/compositions");
   });
