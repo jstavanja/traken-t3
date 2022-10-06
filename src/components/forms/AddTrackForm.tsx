@@ -8,7 +8,8 @@ import {
 } from "@mantine/core";
 import { Dropzone, FileWithPath } from "@mantine/dropzone";
 import { useForm, zodResolver } from "@mantine/form";
-import { IconUpload, IconX, IconFileMusic } from "@tabler/icons";
+import { showNotification } from "@mantine/notifications";
+import { IconUpload, IconX, IconFileMusic, IconCheck } from "@tabler/icons";
 import { FC } from "react";
 import { trpc } from "../../utils/trpc";
 import { newTrackSchema } from "../../utils/validations/track";
@@ -71,6 +72,14 @@ export const AddTrackForm: FC<AddTrackFormProps> = ({ compositionId }) => {
         id: compositionId,
       },
     ]);
+
+    showNotification({
+      title: "Track added.",
+      message: "Your track was uploaded and added successfully! 🎸",
+      autoClose: 3000,
+      color: "green",
+      icon: <IconCheck />,
+    });
   });
 
   const theme = useMantineTheme();

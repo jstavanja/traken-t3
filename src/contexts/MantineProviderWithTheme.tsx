@@ -4,6 +4,7 @@ import {
   ColorSchemeProvider,
   ColorScheme,
 } from "@mantine/core";
+import { NotificationsProvider } from "@mantine/notifications";
 
 export const MantineProviderWithTheme: FC<PropsWithChildren> = ({
   children,
@@ -22,7 +23,9 @@ export const MantineProviderWithTheme: FC<PropsWithChildren> = ({
         withGlobalStyles
         withNormalizeCSS
       >
-        {children}
+        <NotificationsProvider position="top-right">
+          {children}
+        </NotificationsProvider>
       </MantineProvider>
     </ColorSchemeProvider>
   );
