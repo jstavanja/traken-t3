@@ -152,13 +152,20 @@ const ViewCompositionPage = () => {
                   <Button onClick={buyComposition}>Buy this composition</Button>
                 )}
               </Group>
-              <h2>All tracks in composition</h2>
-              <TracksGrid
-                data={composition.tracks.map((track) => ({
-                  title: track.name,
-                  icon: "music",
-                }))}
-              />
+              {composition.tracks.length > 0 && (
+                <>
+                  <h2>All tracks in composition</h2>
+                  <TracksGrid
+                    data={composition.tracks.map((track) => ({
+                      title: track.name,
+                      icon: "music",
+                    }))}
+                  />
+                </>
+              )}
+              {composition.tracks.length === 0 && (
+                <h2>Composition does not yet have any tracks.</h2>
+              )}
             </>
           )}
         </Container>

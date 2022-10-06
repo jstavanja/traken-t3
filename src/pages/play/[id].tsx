@@ -55,35 +55,44 @@ const ViewCompositionPage = () => {
           {composition && (
             <>
               <Stack mb="xl">
-                <Title size="h1">Viewing composition: {composition.name}</Title>
-                <Title size="h2">All tracks in composition</Title>
+                <Title size="h1">Composition player: {composition.name}</Title>
               </Stack>
-              <Paper withBorder p="xl">
-                {composition.tracks?.map((track) => (
-                  <div key={track.id}>
-                    <h4>{track.name}</h4>
-                    <audio controls id={`track-${track.id}`}>
-                      <source src={track.url} type="audio/mpeg" />
-                      Your browser does not support the audio element.
-                    </audio>
-                  </div>
-                ))}
-              </Paper>
-              <Group mt="xl">
-                {!isPlaying && (
-                  <Button color="green" onClick={playAll}>
-                    Play active tracks
-                  </Button>
-                )}
-                {isPlaying && (
-                  <Button color="orange" onClick={pauseAll}>
-                    Pause all tracks
-                  </Button>
-                )}
-                <Button color="gray" onClick={stopAll}>
-                  Stop and reset all tracks
-                </Button>
-              </Group>
+              {composition.tracks.length === 0 && (
+                <h2>Composition does not yet have any tracks.</h2>
+              )}
+              {composition.tracks.length > 0 && (
+                <>
+                  <Title size="h2" mb="lg">
+                    All tracks in composition
+                  </Title>
+                  <Paper withBorder p="xl">
+                    {composition.tracks?.map((track) => (
+                      <div key={track.id}>
+                        <h4>{track.name}</h4>
+                        <audio controls id={`track-${track.id}`}>
+                          <source src={track.url} type="audio/mpeg" />
+                          Your browser does not support the audio element.
+                        </audio>
+                      </div>
+                    ))}
+                  </Paper>
+                  <Group mt="xl">
+                    {!isPlaying && (
+                      <Button color="green" onClick={playAll}>
+                        Play active tracks
+                      </Button>
+                    )}
+                    {isPlaying && (
+                      <Button color="orange" onClick={pauseAll}>
+                        Pause all tracks
+                      </Button>
+                    )}
+                    <Button color="gray" onClick={stopAll}>
+                      Stop and reset all tracks
+                    </Button>
+                  </Group>
+                </>
+              )}
             </>
           )}
           {error && (

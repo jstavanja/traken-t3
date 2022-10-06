@@ -162,11 +162,15 @@ const EditCompositionPage = () => {
                 <AddTrackForm compositionId={compositionId} />
               </Paper>
 
-              <h2>All tracks in composition</h2>
-              <TracksList
-                compositionId={compositionId}
-                tracks={composition.tracks}
-              />
+              {composition.tracks.length > 0 && (
+                <>
+                  <h2>All tracks in composition</h2>
+                  <TracksList
+                    compositionId={compositionId}
+                    tracks={composition.tracks}
+                  />
+                </>
+              )}
             </>
           )}
         </Container>
