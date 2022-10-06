@@ -1,4 +1,4 @@
-import { Composition, Track } from "@prisma/client";
+import { Composition, PrismaClient, Track } from "@prisma/client";
 import S3 from "aws-sdk/clients/s3";
 import {
   CompositionWithTracksThatHaveURLs,
@@ -35,4 +35,21 @@ export const addURLsToCompositionTracks = async (
   compositionWithTracksThatHaveURLs.tracks = tracks;
 
   return compositionWithTracksThatHaveURLs as CompositionWithTracksThatHaveURLs;
+};
+
+export const checkIfUserHasPermissionsToTinkerWithComposition = async (
+  prismaClient: PrismaClient,
+  userId: string,
+  compositionId: string
+) => {
+  const usersComposition = await prismaClient.composition.findFirst({
+    where: {
+      id: compositionId,
+      User: {
+        id: userId,
+      },
+    },
+  });
+
+  return usersComposition !== null;
 };

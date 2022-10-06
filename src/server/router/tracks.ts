@@ -3,6 +3,7 @@ import { z } from "zod";
 import { trackNameValidator } from "../../utils/validations/track";
 import { createProtectedRouter } from "./context";
 import S3 from "aws-sdk/clients/s3";
+import { checkIfUserHasPermissionsToTinkerWithComposition } from "../../utils/compositions";
 
 const s3 = new S3({
   apiVersion: "2006-03-01",
@@ -124,20 +125,3 @@ export const tracksRouter = createProtectedRouter() // TODO: use protected route
       });
     },
   });
-
-const checkIfUserHasPermissionsToTinkerWithComposition = async (
-  prismaClient: PrismaClient,
-  userId: string,
-  compositionId: string
-) => {
-  const usersComposition = await prismaClient.composition.findFirst({
-    where: {
-      id: compositionId,
-      User: {
-        id: userId,
-      },
-    },
-  });
-
-  return usersComposition !== null;
-};

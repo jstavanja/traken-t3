@@ -1,5 +1,8 @@
 import { z } from "zod";
-import { addURLsToCompositionTracks } from "../../utils/compositions";
+import {
+  addURLsToCompositionTracks,
+  checkIfUserHasPermissionsToTinkerWithComposition,
+} from "../../utils/compositions";
 import {
   editCompositionSchema,
   newCompositionSchema,
@@ -72,6 +75,16 @@ export const dashboardCompositionsRouter = createProtectedRouter()
   .mutation("edit", {
     input: editCompositionSchema,
     async resolve({ ctx, input }) {
+      if (
+        !checkIfUserHasPermissionsToTinkerWithComposition(
+          ctx.prisma,
+          ctx.session.user.id,
+          input.id
+        )
+      ) {
+        throw new Error("You are not authorized to alter this composition");
+      }
+
       return await ctx.prisma.composition.update({
         where: {
           id: input.id,
@@ -79,6 +92,28 @@ export const dashboardCompositionsRouter = createProtectedRouter()
         data: {
           name: input.name ?? undefined,
           description: input.description ?? undefined,
+        },
+      });
+    },
+  })
+  .mutation("delete", {
+    input: z.object({
+      id: z.string(),
+    }),
+    async resolve({ ctx, input }) {
+      if (
+        !checkIfUserHasPermissionsToTinkerWithComposition(
+          ctx.prisma,
+          ctx.session.user.id,
+          input.id
+        )
+      ) {
+        throw new Error("You are not authorized to alter this composition");
+      }
+
+      return await ctx.prisma.composition.delete({
+        where: {
+          id: input.id,
         },
       });
     },

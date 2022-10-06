@@ -5,13 +5,14 @@ import AuthGuard from "../../../components/AuthGuard";
 import AuthError from "../../../components/dashboard/AuthError";
 import { trpc } from "../../../utils/trpc";
 
-import { Button, Container, Group, Paper, Title } from "@mantine/core";
+import { Button, Container, Group, Paper, Title, Text } from "@mantine/core";
 import Head from "next/head";
 import { AddTrackForm } from "../../../components/forms/AddTrackForm";
 import { EditCompositionForm } from "../../../components/forms/EditCompositionForm";
 import { EditTrackNameForm } from "../../../components/forms/EditTrackNameForm";
 import { TrackWithURL } from "../../../types/compositions";
 import { showNotification } from "@mantine/notifications";
+import { openConfirmModal } from "@mantine/modals";
 import { IconCheck } from "@tabler/icons";
 
 interface TracksListProps {
@@ -137,6 +138,43 @@ const EditCompositionPage = () => {
     }
   );
 
+  const { mutateAsync: deleteCompositionMutation } = trpc.useMutation(
+    "dashboardCompositions.delete"
+  );
+
+  const deleteComposition = () => {
+    openConfirmModal({
+      title: "Please confirm your action",
+      children: (
+        <Text size="sm">
+          Are you sure you want to delete composition {composition?.name}?
+        </Text>
+      ),
+      labels: { confirm: "Delete", cancel: "Cancel" },
+      confirmProps: { color: "red" },
+      onConfirm: () => {
+        deleteCompositionMutation(
+          {
+            id: compositionId,
+          },
+          {
+            onSuccess: () => {
+              router.push("/dashboard/compositions");
+
+              showNotification({
+                title: "Composition deleted.",
+                message: `Composition ${composition?.name} was deleted successfully! ✌️`,
+                autoClose: 3000,
+                color: "green",
+                icon: <IconCheck />,
+              });
+            },
+          }
+        );
+      },
+    });
+  };
+
   return (
     <>
       <Head>
@@ -149,9 +187,14 @@ const EditCompositionPage = () => {
             <>
               <Group position="apart">
                 <Title>Editing &quot;{composition.name}&quot;</Title>
-                <Link href="/dashboard/compositions">
-                  <Button>Go back to your compositions</Button>
-                </Link>
+                <Group>
+                  <Link href="/dashboard/compositions">
+                    <Button>Go back to your compositions</Button>
+                  </Link>
+                  <Button color="red" onClick={deleteComposition}>
+                    Delete composition
+                  </Button>
+                </Group>
               </Group>
               <Paper radius="md" p="xl" withBorder mt="xl">
                 <h2>Edit description metadata</h2>
@@ -161,16 +204,17 @@ const EditCompositionPage = () => {
                 <h2>Add a track</h2>
                 <AddTrackForm compositionId={compositionId} />
               </Paper>
-
-              {composition.tracks.length > 0 && (
-                <>
-                  <h2>All tracks in composition</h2>
-                  <TracksList
-                    compositionId={compositionId}
-                    tracks={composition.tracks}
-                  />
-                </>
-              )}
+              <Paper radius="md" p="xl" withBorder mt="xl">
+                {composition.tracks.length > 0 && (
+                  <>
+                    <h2>All tracks in composition</h2>
+                    <TracksList
+                      compositionId={compositionId}
+                      tracks={composition.tracks}
+                    />
+                  </>
+                )}
+              </Paper>
             </>
           )}
         </Container>
