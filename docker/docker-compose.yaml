@@ -6,7 +6,7 @@ services:
     command: server /data --console-address ":9001"
     environment:
       - MINIO_ROOT_USER=admin
-      - MINIO_ROOT_PASSWORD=
+      - MINIO_ROOT_PASSWORD=$MINIO_ROOT_PASSWORD
     image: quay.io/minio/minio:latest
     ports:
       - "9000:9000"
@@ -19,7 +19,7 @@ services:
     image: postgres
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD:
+      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
       PGDATA: /data/postgres
     volumes:
       - postgres:/data/postgres
