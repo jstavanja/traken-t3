@@ -1,6 +1,8 @@
 import { Group, TextInput, Button } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
+import { showNotification } from "@mantine/notifications";
 import { Track } from "@prisma/client";
+import { IconCheck } from "@tabler/icons";
 import { FC } from "react";
 import { trpc } from "../../utils/trpc";
 import { editTrackSchema } from "../../utils/validations/track";
@@ -23,11 +25,28 @@ export const EditTrackNameForm: FC<EditTrackNameFormProps> = ({
 
   const { mutateAsync: editTrackMutation } = trpc.useMutation("tracks.edit");
 
+  const utils = trpc.useContext();
+
   const onEditTrackSubmit = form.onSubmit(async (values) => {
     await editTrackMutation({
       name: values.name,
       compositionId,
       id: track.id,
+    });
+
+    utils.invalidateQueries([
+      "dashboardCompositions.get",
+      {
+        id: compositionId,
+      },
+    ]);
+
+    showNotification({
+      title: "Track name edited",
+      message: "The track name was succesfully updated! 🔧",
+      autoClose: 3000,
+      color: "green",
+      icon: <IconCheck />,
     });
 
     onSuccessfulTrackEdit();
