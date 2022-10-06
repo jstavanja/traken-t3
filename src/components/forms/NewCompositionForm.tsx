@@ -45,13 +45,11 @@ export const NewCompositionForm = () => {
           placeholder="Cool song"
           {...form.getInputProps("name")}
         />
-        {form.errors.name && <p>{form.errors.name}</p>}
         <TextInput
           label="Description"
           placeholder="This is my new cool jam!"
           {...form.getInputProps("description")}
         />
-        {form.errors.description && <p>{form.errors.description}</p>}
         <Button type="submit">Create new composition</Button>
       </Stack>
     </form>
