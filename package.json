@@ -16,6 +16,7 @@
     "@mantine/dropzone": "^5.5.4",
     "@mantine/form": "^5.5.0",
     "@mantine/hooks": "^5.5.4",
+    "@mantine/modals": "^5.5.4",
     "@mantine/notifications": "^5.5.4",
     "@next-auth/prisma-adapter": "^1.0.4",
     "@prisma/client": "^4.4.0",
