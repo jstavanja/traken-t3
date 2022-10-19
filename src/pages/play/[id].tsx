@@ -1,15 +1,13 @@
-import { Button, Container, Group, Paper, Stack, Title } from "@mantine/core";
+import { Container, Paper, Stack, Title } from "@mantine/core";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useState } from "react";
 import AuthGuard from "../../components/AuthGuard";
+import Player from "../../components/player";
 import { trpc } from "../../utils/trpc";
 
 const ViewCompositionPage = () => {
   const router = useRouter();
   const compositionId = router.query.id as string;
-
-  const [isPlaying, setIsPlaying] = useState(false);
 
   const { data: composition, error } = trpc.useQuery(
     [
@@ -20,30 +18,9 @@ const ViewCompositionPage = () => {
     ],
     {
       retry: false,
+      staleTime: Infinity,
     }
   );
-
-  const playAll = () => {
-    setIsPlaying(true);
-    document.querySelectorAll("audio").forEach((audioElement) => {
-      audioElement.play();
-    });
-  };
-
-  const stopAll = () => {
-    setIsPlaying(false);
-    document.querySelectorAll("audio").forEach((audioElement) => {
-      audioElement.pause();
-      audioElement.currentTime = 0.0;
-    });
-  };
-
-  const pauseAll = () => {
-    setIsPlaying(false);
-    document.querySelectorAll("audio").forEach((audioElement) => {
-      audioElement.pause();
-    });
-  };
 
   return (
     <>
@@ -66,31 +43,8 @@ const ViewCompositionPage = () => {
                     All tracks in composition
                   </Title>
                   <Paper withBorder p="xl">
-                    {composition.tracks?.map((track) => (
-                      <div key={track.id}>
-                        <h4>{track.name}</h4>
-                        <audio controls id={`track-${track.id}`}>
-                          <source src={track.url} type="audio/mpeg" />
-                          Your browser does not support the audio element.
-                        </audio>
-                      </div>
-                    ))}
+                    <Player tracks={composition.tracks} />
                   </Paper>
-                  <Group mt="xl">
-                    {!isPlaying && (
-                      <Button color="green" onClick={playAll}>
-                        Play active tracks
-                      </Button>
-                    )}
-                    {isPlaying && (
-                      <Button color="orange" onClick={pauseAll}>
-                        Pause all tracks
-                      </Button>
-                    )}
-                    <Button color="gray" onClick={stopAll}>
-                      Stop and reset all tracks
-                    </Button>
-                  </Group>
                 </>
               )}
             </>
