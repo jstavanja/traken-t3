@@ -55,6 +55,7 @@ model User {
     sessions               Session[]
     compositions           Composition[]
     accessibleCompositions CompositionsOnUsers[]
+    role                   Role                  @default(USER)
 }
 
 model VerificationToken {
@@ -91,4 +92,10 @@ model CompositionsOnUsers {
     assignedBy    String
 
     @@id([userId, compositionId])
+}
+
+enum Role {
+    ADMIN
+    AUTHOR
+    USER
 }

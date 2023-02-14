@@ -1,3 +1,4 @@
+import { Role } from "@prisma/client";
 import { z } from "zod";
 import {
   addURLsToCompositionTracks,
@@ -7,6 +8,7 @@ import {
   editCompositionSchema,
   newCompositionSchema,
 } from "../../utils/validations/compositions";
+import { assertUserHasOneOfRoles } from "../common/authorization";
 import { createProtectedRouter } from "./context";
 
 export const dashboardCompositionsRouter = createProtectedRouter()
@@ -55,7 +57,13 @@ export const dashboardCompositionsRouter = createProtectedRouter()
   .mutation("create", {
     input: newCompositionSchema,
     async resolve({ ctx, input }) {
-      const user = ctx.session.user;
+      const userId = ctx.session.user.id;
+
+      assertUserHasOneOfRoles({
+        prismaClient: ctx.prisma,
+        userId,
+        roles: [Role.ADMIN, Role.AUTHOR],
+      });
 
       await ctx.prisma.composition.create({
         data: {
@@ -63,7 +71,7 @@ export const dashboardCompositionsRouter = createProtectedRouter()
           description: input.description,
           User: {
             connect: {
-              id: user.id,
+              id: userId,
             },
           },
         },
