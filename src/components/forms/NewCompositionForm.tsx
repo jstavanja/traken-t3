@@ -33,9 +33,8 @@ export const NewCompositionForm = () => {
     },
     onError: () => {
       showNotification({
-        title: 'Error creating composition.',
-        message:
-          'There was an error creating your composition. Please try again later.',
+        title: 'Cannot create composition.',
+        message: error?.message ?? 'Something went wrong. Please try again.',
         autoClose: 3000,
         color: 'red',
         icon: <IconX />,
