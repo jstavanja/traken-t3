@@ -1,4 +1,4 @@
-import { PrismaClient, Role } from "@prisma/client";
+import { PrismaClient, Role } from '@prisma/client';
 
 export const assertUserHasOneOfRoles = async ({
   prismaClient,
@@ -20,13 +20,13 @@ export const assertUserHasOneOfRoles = async ({
 
   if (!user) {
     throw new Error(
-      "You are not authorized to create compositions. You must be logged in."
+      'You are not authorized to create compositions. You must be logged in.'
     );
   }
 
   if (!roles.includes(user.role)) {
     throw new Error(
-      "You are not authorized to create compositions. You must become an author first."
+      'You are not authorized to create compositions. You must become an author first.'
     );
   }
 
