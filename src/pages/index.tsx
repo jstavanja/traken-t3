@@ -1,6 +1,7 @@
-import { useSession } from "next-auth/react";
-import Head from "next/head";
-import { WelcomeHero } from "../components/WelcomeHero";
+import { useSession } from 'next-auth/react';
+import Head from 'next/head';
+import { WelcomeHero } from '../components/WelcomeHero';
+import { Role } from '@prisma/client';
 
 const Home = () => {
   const { data: session } = useSession();
@@ -16,18 +17,19 @@ const Home = () => {
           <>
             <WelcomeHero
               heroText={{
-                prefix: "Welcome back, ",
-                text: session.user.name ?? "user",
+                prefix: 'Welcome back, ',
+                text: session.user.name ?? 'user',
               }}
               actions={[
                 {
-                  text: "Explore compositions",
-                  href: "/explore",
+                  text: 'Explore compositions',
+                  href: '/explore',
                 },
                 {
-                  color: "gray",
-                  text: "Create your own compositions",
-                  href: "/dashboard/compositions",
+                  color: 'gray',
+                  text: 'Create your own compositions',
+                  href: '/dashboard/compositions',
+                  minimumRole: Role.AUTHOR,
                 },
               ]}
             />
@@ -36,19 +38,19 @@ const Home = () => {
         {!session?.user && (
           <WelcomeHero
             heroText={{
-              prefix: "Take a track and",
-              text: "jam along",
-              postfix: "by disabling any instrument!",
+              prefix: 'Take a track and',
+              text: 'jam along',
+              postfix: 'by disabling any instrument!',
             }}
             actions={[
               {
-                color: "gray",
-                text: "Explore compositions",
-                href: "/explore",
+                color: 'gray',
+                text: 'Explore compositions',
+                href: '/explore',
               },
               {
-                text: "Sign in",
-                href: "/api/auth/signin",
+                text: 'Sign in',
+                href: '/api/auth/signin',
               },
             ]}
           />

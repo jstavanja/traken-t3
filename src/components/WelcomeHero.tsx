@@ -5,70 +5,72 @@ import {
   Button,
   Container,
   Center,
-} from "@mantine/core";
-import Link from "next/link";
-import Image from "next/image";
-import { FC } from "react";
+} from '@mantine/core';
+import Link from 'next/link';
+import Image from 'next/image';
+import { FC } from 'react';
+import { Role } from '@prisma/client';
+import RoleGuard from './RoleGuard';
 
 const useStyles = createStyles((theme) => ({
   wrapper: {
-    position: "relative",
+    position: 'relative',
   },
 
   inner: {
-    position: "relative",
+    position: 'relative',
     zIndex: 1,
   },
 
   title: {
-    textAlign: "center",
+    textAlign: 'center',
     fontWeight: 800,
     fontSize: 40,
     letterSpacing: -1,
-    color: theme.colorScheme === "dark" ? theme.white : theme.black,
+    color: theme.colorScheme === 'dark' ? theme.white : theme.black,
     marginBottom: theme.spacing.xs,
     fontFamily: `Greycliff CF, ${theme.fontFamily}`,
 
-    "@media (max-width: 520px)": {
+    '@media (max-width: 520px)': {
       fontSize: 28,
-      textAlign: "left",
+      textAlign: 'left',
     },
   },
 
   highlight: {
     color:
-      theme.colors[theme.primaryColor]?.[theme.colorScheme === "dark" ? 4 : 6],
+      theme.colors[theme.primaryColor]?.[theme.colorScheme === 'dark' ? 4 : 6],
   },
 
   description: {
-    textAlign: "center",
+    textAlign: 'center',
 
-    "@media (max-width: 520px)": {
-      textAlign: "left",
+    '@media (max-width: 520px)': {
+      textAlign: 'left',
       fontSize: theme.fontSizes.md,
     },
   },
 
   controls: {
     marginTop: theme.spacing.lg,
-    display: "flex",
-    justifyContent: "center",
+    display: 'flex',
+    justifyContent: 'center',
 
-    "@media (max-width: 520px)": {
-      flexDirection: "column",
+    '@media (max-width: 520px)': {
+      flexDirection: 'column',
     },
   },
 
   control: {
-    "&:not(:first-of-type)": {
+    '&:not(:first-of-type)': {
       marginLeft: theme.spacing.md,
     },
 
-    "@media (max-width: 520px)": {
+    '@media (max-width: 520px)': {
       height: 42,
       fontSize: theme.fontSizes.md,
 
-      "&:not(:first-of-type)": {
+      '&:not(:first-of-type)': {
         marginTop: theme.spacing.md,
         marginLeft: 0,
       },
@@ -86,6 +88,7 @@ interface WelcomeHeroProps {
     color?: string;
     text: string;
     href: string;
+    minimumRole?: Role;
   }[];
 }
 
@@ -105,10 +108,10 @@ export const WelcomeHero: FC<WelcomeHeroProps> = ({ heroText, actions }) => {
         </Center>
 
         <Title className={classes.title}>
-          {heroText.prefix}{" "}
+          {heroText.prefix}{' '}
           <Text component="span" className={classes.highlight} inherit>
             {heroText.text}
-          </Text>{" "}
+          </Text>{' '}
           {heroText.postfix}
         </Title>
 
@@ -123,15 +126,17 @@ export const WelcomeHero: FC<WelcomeHeroProps> = ({ heroText, actions }) => {
         <div className={classes.controls}>
           {actions.map((action) => {
             return (
-              <Link href={action.href} key={action.href}>
-                <Button
-                  className={classes.control}
-                  size="lg"
-                  color={action.color}
-                >
-                  {action.text}
-                </Button>
-              </Link>
+              <RoleGuard minimumRole={action.minimumRole ?? Role.USER}>
+                <Link href={action.href} key={action.href}>
+                  <Button
+                    className={classes.control}
+                    size="lg"
+                    color={action.color}
+                  >
+                    {action.text}
+                  </Button>
+                </Link>
+              </RoleGuard>
             );
           })}
         </div>

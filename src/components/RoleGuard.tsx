@@ -38,19 +38,10 @@ const RoleGuard: FC<PropsWithChildren<RoleGuardProps>> = ({
   const { data } = useSession();
 
   const role = data?.user?.role ?? Role.USER; // falback to user (least privileged)
-  console.log({ role });
+
   if (!minimumRoleSatisfied(minimumRole, role)) {
     if (CustomError) return <CustomError />;
-    return (
-      <Container>
-        <Stack>
-          <Title>You do not have the permissions to view this page.</Title>
-          <Link href="/">
-            <Button>Return to home</Button>
-          </Link>
-        </Stack>
-      </Container>
-    );
+    return null;
   }
   return <>{children}</>;
 };
