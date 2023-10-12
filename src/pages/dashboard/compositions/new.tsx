@@ -5,6 +5,7 @@ import { Container, Title } from '@mantine/core';
 import Head from 'next/head';
 import { AuthConfig } from '../../../types/auth';
 import { Role } from '@prisma/client';
+import { DASHBOARD_AUTH_CONFIG } from '../../../constants/authConfigs';
 
 const NewCompositionPage = () => {
   return (
@@ -22,10 +23,6 @@ const NewCompositionPage = () => {
   );
 };
 
-const clientSideAuthConfig: AuthConfig = {
-  minimumRole: Role.AUTHOR,
-};
-
-NewCompositionPage.clientSideAuthConfig = clientSideAuthConfig;
+NewCompositionPage.clientSideAuthConfig = DASHBOARD_AUTH_CONFIG;
 
 export default NewCompositionPage;

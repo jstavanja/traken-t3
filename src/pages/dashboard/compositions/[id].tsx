@@ -1,19 +1,20 @@
-import Link from "next/link";
-import { useRouter } from "next/router";
-import { FC, useState } from "react";
-import AuthGuard from "../../../components/AuthGuard";
-import AuthError from "../../../components/dashboard/AuthError";
-import { trpc } from "../../../utils/trpc";
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { FC, useState } from 'react';
+import AuthGuard from '../../../components/AuthGuard';
+import AuthError from '../../../components/dashboard/AuthError';
+import { trpc } from '../../../utils/trpc';
 
-import { Button, Container, Group, Paper, Title, Text } from "@mantine/core";
-import Head from "next/head";
-import { AddTrackForm } from "../../../components/forms/AddTrackForm";
-import { EditCompositionForm } from "../../../components/forms/EditCompositionForm";
-import { EditTrackNameForm } from "../../../components/forms/EditTrackNameForm";
-import { TrackWithURL } from "../../../types/compositions";
-import { showNotification } from "@mantine/notifications";
-import { openConfirmModal } from "@mantine/modals";
-import { IconCheck } from "@tabler/icons";
+import { Button, Container, Group, Paper, Title, Text } from '@mantine/core';
+import Head from 'next/head';
+import { AddTrackForm } from '../../../components/forms/AddTrackForm';
+import { EditCompositionForm } from '../../../components/forms/EditCompositionForm';
+import { EditTrackNameForm } from '../../../components/forms/EditTrackNameForm';
+import { TrackWithURL } from '../../../types/compositions';
+import { showNotification } from '@mantine/notifications';
+import { openConfirmModal } from '@mantine/modals';
+import { IconCheck } from '@tabler/icons';
+import { DASHBOARD_AUTH_CONFIG } from '../../../constants/authConfigs';
 
 interface TracksListProps {
   compositionId: string;
@@ -46,7 +47,7 @@ const EditTrackControls: FC<EditTrackControlsProps> = ({
   track,
 }) => {
   const { mutateAsync: deleteTrackMutation } =
-    trpc.useMutation("tracks.delete");
+    trpc.useMutation('tracks.delete');
 
   const utils = trpc.useContext();
 
@@ -59,17 +60,17 @@ const EditTrackControls: FC<EditTrackControlsProps> = ({
       {
         onSuccess: () => {
           utils.invalidateQueries([
-            "dashboardCompositions.get",
+            'dashboardCompositions.get',
             {
               id: compositionId,
             },
           ]);
 
           showNotification({
-            title: "Track deleted.",
+            title: 'Track deleted.',
             message: `Track ${track.name} was deleted successfully! ✌️`,
             autoClose: 3000,
-            color: "green",
+            color: 'green',
             icon: <IconCheck />,
           });
         },
@@ -128,9 +129,9 @@ const EditCompositionPage = () => {
 
   const { data: composition, error } = trpc.useQuery(
     [
-      "dashboardCompositions.get",
+      'dashboardCompositions.get',
       {
-        id: compositionId ?? "",
+        id: compositionId ?? '',
       },
     ],
     {
@@ -139,19 +140,19 @@ const EditCompositionPage = () => {
   );
 
   const { mutateAsync: deleteCompositionMutation } = trpc.useMutation(
-    "dashboardCompositions.delete"
+    'dashboardCompositions.delete'
   );
 
   const deleteComposition = () => {
     openConfirmModal({
-      title: "Please confirm your action",
+      title: 'Please confirm your action',
       children: (
         <Text size="sm">
           Are you sure you want to delete composition {composition?.name}?
         </Text>
       ),
-      labels: { confirm: "Delete", cancel: "Cancel" },
-      confirmProps: { color: "red" },
+      labels: { confirm: 'Delete', cancel: 'Cancel' },
+      confirmProps: { color: 'red' },
       onConfirm: () => {
         deleteCompositionMutation(
           {
@@ -159,13 +160,13 @@ const EditCompositionPage = () => {
           },
           {
             onSuccess: () => {
-              router.push("/dashboard/compositions");
+              router.push('/dashboard/compositions');
 
               showNotification({
-                title: "Composition deleted.",
+                title: 'Composition deleted.',
                 message: `Composition ${composition?.name} was deleted successfully! ✌️`,
                 autoClose: 3000,
-                color: "green",
+                color: 'green',
                 icon: <IconCheck />,
               });
             },
@@ -178,7 +179,7 @@ const EditCompositionPage = () => {
   return (
     <>
       <Head>
-        <title>Traken - Editing {composition?.name ?? "..."}</title>
+        <title>Traken - Editing {composition?.name ?? '...'}</title>
       </Head>
       <AuthGuard CustomError={AuthError}>
         <Container>
@@ -222,5 +223,7 @@ const EditCompositionPage = () => {
     </>
   );
 };
+
+EditCompositionPage.clientSideAuthConfig = DASHBOARD_AUTH_CONFIG;
 
 export default EditCompositionPage;

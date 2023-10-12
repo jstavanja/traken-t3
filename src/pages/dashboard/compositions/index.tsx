@@ -7,6 +7,7 @@ import AuthError from '../../../components/dashboard/AuthError';
 import { trpc } from '../../../utils/trpc';
 import RoleGuard from '../../../components/RoleGuard';
 import { Role } from '@prisma/client';
+import { DASHBOARD_AUTH_CONFIG } from '../../../constants/authConfigs';
 
 const CompositionsListPage = () => {
   const { data: compositions } = trpc.useQuery([
@@ -39,5 +40,7 @@ const CompositionsListPage = () => {
     </>
   );
 };
+
+CompositionsListPage.clientSideAuthConfig = DASHBOARD_AUTH_CONFIG;
 
 export default CompositionsListPage;
