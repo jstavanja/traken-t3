@@ -1,16 +1,19 @@
-import { z } from "zod";
+import { Role } from '@prisma/client';
+import { z } from 'zod';
 import {
   addURLsToCompositionTracks,
   checkIfUserHasPermissionsToTinkerWithComposition,
-} from "../../utils/compositions";
+} from '../../utils/compositions';
 import {
   editCompositionSchema,
   newCompositionSchema,
-} from "../../utils/validations/compositions";
-import { createProtectedRouter } from "./context";
+} from '../../utils/validations/compositions';
+import { assertUserHasOneOfRoles } from '../common/authorization';
+import { createProtectedRouter } from './context';
+import { generateErrorResponse } from '../../utils/errors';
 
 export const dashboardCompositionsRouter = createProtectedRouter()
-  .query("getAll", {
+  .query('getAll', {
     async resolve({ ctx }) {
       const user = ctx.session.user;
 
@@ -30,7 +33,7 @@ export const dashboardCompositionsRouter = createProtectedRouter()
       return userWithCompositions?.compositions ?? [];
     },
   })
-  .query("get", {
+  .query('get', {
     input: z.object({
       id: z.string(),
     }),
@@ -52,10 +55,16 @@ export const dashboardCompositionsRouter = createProtectedRouter()
       return addURLsToCompositionTracks(composition);
     },
   })
-  .mutation("create", {
+  .mutation('create', {
     input: newCompositionSchema,
     async resolve({ ctx, input }) {
-      const user = ctx.session.user;
+      const userId = ctx.session.user.id;
+
+      await assertUserHasOneOfRoles({
+        prismaClient: ctx.prisma,
+        userId,
+        roles: [Role.ADMIN, Role.AUTHOR],
+      });
 
       await ctx.prisma.composition.create({
         data: {
@@ -63,7 +72,7 @@ export const dashboardCompositionsRouter = createProtectedRouter()
           description: input.description,
           User: {
             connect: {
-              id: user.id,
+              id: userId,
             },
           },
         },
@@ -72,7 +81,7 @@ export const dashboardCompositionsRouter = createProtectedRouter()
       return input;
     },
   })
-  .mutation("edit", {
+  .mutation('edit', {
     input: editCompositionSchema,
     async resolve({ ctx, input }) {
       if (
@@ -82,7 +91,7 @@ export const dashboardCompositionsRouter = createProtectedRouter()
           input.id
         )
       ) {
-        throw new Error("You are not authorized to alter this composition");
+        throw new Error('You are not authorized to alter this composition');
       }
 
       return await ctx.prisma.composition.update({
@@ -96,7 +105,7 @@ export const dashboardCompositionsRouter = createProtectedRouter()
       });
     },
   })
-  .mutation("delete", {
+  .mutation('delete', {
     input: z.object({
       id: z.string(),
     }),
@@ -108,7 +117,7 @@ export const dashboardCompositionsRouter = createProtectedRouter()
           input.id
         )
       ) {
-        throw new Error("You are not authorized to alter this composition");
+        throw new Error('You are not authorized to alter this composition');
       }
 
       return await ctx.prisma.composition.delete({

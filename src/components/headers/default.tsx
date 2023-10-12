@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState } from 'react';
 import {
   createStyles,
   Container,
@@ -12,24 +12,26 @@ import {
   Button,
   ActionIcon,
   useMantineColorScheme,
-} from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
-import { IconLogout, IconChevronDown } from "@tabler/icons";
-import { signOut, useSession } from "next-auth/react";
-import Link from "next/link";
-import { useRouter } from "next/router";
-import Image from "next/image";
-import { ColorThemeSwitcher } from "../ColorSchemeSwitcher";
+} from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
+import { IconLogout, IconChevronDown } from '@tabler/icons';
+import { signOut, useSession } from 'next-auth/react';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import Image from 'next/image';
+import { ColorThemeSwitcher } from '../ColorSchemeSwitcher';
+import RoleGuard from '../RoleGuard';
+import { Role } from '@prisma/client';
 
 const useStyles = createStyles((theme) => ({
   header: {
     paddingTop: theme.spacing.sm,
     backgroundColor:
-      theme.colorScheme === "dark"
+      theme.colorScheme === 'dark'
         ? theme.colors.dark?.[6]
         : theme.colors.gray?.[0],
     borderBottom: `1px solid ${
-      theme.colorScheme === "dark" ? "transparent" : theme.colors.gray?.[2]
+      theme.colorScheme === 'dark' ? 'transparent' : theme.colors.gray?.[2]
     }`,
     marginBottom: 20,
   },
@@ -39,59 +41,59 @@ const useStyles = createStyles((theme) => ({
   },
 
   user: {
-    color: theme.colorScheme === "dark" ? theme.colors.dark?.[0] : theme.black,
+    color: theme.colorScheme === 'dark' ? theme.colors.dark?.[0] : theme.black,
     padding: `${theme.spacing.xs}px ${theme.spacing.sm}px`,
     borderRadius: theme.radius.sm,
-    transition: "background-color 100ms ease",
+    transition: 'background-color 100ms ease',
 
-    "&:hover": {
+    '&:hover': {
       backgroundColor:
-        theme.colorScheme === "dark" ? theme.colors.dark?.[8] : theme.white,
+        theme.colorScheme === 'dark' ? theme.colors.dark?.[8] : theme.white,
     },
 
-    [theme.fn.smallerThan("xs")]: {
-      display: "none",
+    [theme.fn.smallerThan('xs')]: {
+      display: 'none',
     },
   },
 
   burger: {
-    [theme.fn.largerThan("xs")]: {
-      display: "none",
+    [theme.fn.largerThan('xs')]: {
+      display: 'none',
     },
   },
 
   userActive: {
     backgroundColor:
-      theme.colorScheme === "dark" ? theme.colors.dark?.[8] : theme.white,
+      theme.colorScheme === 'dark' ? theme.colors.dark?.[8] : theme.white,
   },
 
   tabs: {
-    [theme.fn.smallerThan("sm")]: {
-      display: "none",
+    [theme.fn.smallerThan('sm')]: {
+      display: 'none',
     },
   },
 
   tabsList: {
-    borderBottom: "0 !important",
+    borderBottom: '0 !important',
   },
 
   tab: {
     fontWeight: 500,
     height: 38,
-    backgroundColor: "transparent",
+    backgroundColor: 'transparent',
 
-    "&:hover": {
+    '&:hover': {
       backgroundColor:
-        theme.colorScheme === "dark"
+        theme.colorScheme === 'dark'
           ? theme.colors.dark?.[5]
           : theme.colors.gray?.[1],
     },
 
-    "&[data-active]": {
+    '&[data-active]': {
       backgroundColor:
-        theme.colorScheme === "dark" ? theme.colors.dark?.[7] : theme.white,
+        theme.colorScheme === 'dark' ? theme.colors.dark?.[7] : theme.white,
       borderColor:
-        theme.colorScheme === "dark"
+        theme.colorScheme === 'dark'
           ? theme.colors.dark?.[7]
           : theme.colors.gray?.[2],
     },
@@ -100,18 +102,19 @@ const useStyles = createStyles((theme) => ({
 
 const NAVIGATION_ITEMS = [
   {
-    title: "Home",
-    href: "/",
+    title: 'Home',
+    href: '/',
   },
   {
-    title: "Compositions",
-    href: "/explore",
+    title: 'Compositions',
+    href: '/explore',
   },
   {
-    title: "Dashboard",
-    href: "/dashboard/compositions",
+    title: 'Dashboard',
+    href: '/dashboard/compositions',
     if: {
       loggedIn: true,
+      minimumRole: Role.AUTHOR,
     },
   },
 ];
@@ -133,7 +136,7 @@ export const DefaultHeader = () => {
           <Link href="/" passHref>
             <a>
               <Image
-                src={colorScheme === "light" ? "/logo.png" : "/logo-bright.png"}
+                src={colorScheme === 'light' ? '/logo.png' : '/logo-bright.png'}
                 alt="Traken logo with a DJ on the picture"
                 height="60px"
                 width="200px"
@@ -147,14 +150,14 @@ export const DefaultHeader = () => {
             className={classes.burger}
             size="sm"
           />
-          {status === "unauthenticated" && (
+          {status === 'unauthenticated' && (
             <Link href="/api/auth/signin" passHref>
               <a>
                 <Button variant="default">Log in</Button>
               </a>
             </Link>
           )}
-          {status === "authenticated" && (
+          {status === 'authenticated' && (
             <Menu
               width={260}
               position="bottom-end"
@@ -171,7 +174,7 @@ export const DefaultHeader = () => {
                   <Group spacing={7}>
                     <Avatar
                       src={session?.user?.image}
-                      alt={session?.user?.name ?? "Users avatar"}
+                      alt={session?.user?.name ?? 'Users avatar'}
                       radius="xl"
                       size={20}
                     />
@@ -213,10 +216,12 @@ export const DefaultHeader = () => {
           <Tabs.List>
             {NAVIGATION_ITEMS.map(
               (item) =>
-                !(status !== "authenticated" && item.if?.loggedIn) && (
-                  <Tabs.Tab value={item.href} key={item.href}>
-                    {item.title}
-                  </Tabs.Tab>
+                !(status !== 'authenticated' && item.if?.loggedIn) && (
+                  <RoleGuard minimumRole={item.if?.minimumRole ?? Role.USER}>
+                    <Tabs.Tab value={item.href} key={item.href}>
+                      {item.title}
+                    </Tabs.Tab>
+                  </RoleGuard>
                 )
             )}
           </Tabs.List>
