@@ -3,27 +3,7 @@ import { Role } from '@prisma/client';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { FC, PropsWithChildren } from 'react';
-
-const minimumRoleSatisfied = (minimumRole: Role, role: Role) => {
-  if (minimumRole === Role.USER) {
-    // anyone is a user
-    return true;
-  }
-
-  if (role === Role.ADMIN) {
-    // admins can do anything
-    return true;
-  }
-
-  if (
-    minimumRole === Role.AUTHOR &&
-    ([Role.AUTHOR, Role.ADMIN] as string[]).includes(role)
-  ) {
-    return true;
-  }
-
-  return false;
-};
+import { minimumRoleSatisfied } from '../utils/roles';
 
 interface RoleGuardProps {
   minimumRole: Role;

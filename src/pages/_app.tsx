@@ -1,18 +1,28 @@
 // src/pages/_app.tsx
-import { httpBatchLink } from "@trpc/client/links/httpBatchLink";
-import { loggerLink } from "@trpc/client/links/loggerLink";
-import { withTRPC } from "@trpc/next";
-import { SessionProvider } from "next-auth/react";
-import superjson from "superjson";
-import type { AppType } from "next/app";
-import type { AppRouter } from "../server/router";
-import type { Session } from "next-auth";
-import "../styles/globals.css";
-import DefaultLayout from "../layouts/default";
-import Head from "next/head";
-import { MantineProviderWithTheme } from "../contexts/MantineProviderWithTheme";
+import { httpBatchLink } from '@trpc/client/links/httpBatchLink';
+import { loggerLink } from '@trpc/client/links/loggerLink';
+import { withTRPC } from '@trpc/next';
+import { SessionProvider, useSession } from 'next-auth/react';
+import superjson from 'superjson';
+import type { AppProps, AppType } from 'next/app';
+import type { AppRouter } from '../server/router';
+import type { Session } from 'next-auth';
+import '../styles/globals.css';
+import DefaultLayout from '../layouts/default';
+import Head from 'next/head';
+import { MantineProviderWithTheme } from '../contexts/MantineProviderWithTheme';
+import { FC, PropsWithChildren } from 'react';
+import { AuthConfig } from '../types/auth';
+import { minimumRoleSatisfied } from '../utils/roles';
+import { Role } from '@prisma/client';
+import { useRouter } from 'next/router';
 
-const MyApp: AppType<{ session: Session | null }> = ({
+interface AuthAppProps
+  extends Omit<AppProps<{ session: Session | null }>, 'Component'> {
+  Component: AppProps['Component'] & { clientSideAuthConfig: AuthConfig };
+}
+
+const MyApp: FC<AuthAppProps> = ({
   Component,
   pageProps: { session, ...pageProps },
 }) => {
@@ -47,7 +57,15 @@ const MyApp: AppType<{ session: Session | null }> = ({
       <MantineProviderWithTheme>
         <SessionProvider session={session}>
           <DefaultLayout>
-            <Component {...pageProps} />
+            {Component.clientSideAuthConfig ? (
+              <AuthorizationRouteGuard
+                clientSideAuthConfig={Component.clientSideAuthConfig}
+              >
+                <Component {...pageProps} />
+              </AuthorizationRouteGuard>
+            ) : (
+              <Component {...pageProps} />
+            )}
           </DefaultLayout>
         </SessionProvider>
       </MantineProviderWithTheme>
@@ -55,8 +73,34 @@ const MyApp: AppType<{ session: Session | null }> = ({
   );
 };
 
+const AuthorizationRouteGuard: FC<
+  PropsWithChildren<{ clientSideAuthConfig: AuthConfig }>
+> = ({ children, clientSideAuthConfig }) => {
+  const { status, data } = useSession({ required: true });
+  const router = useRouter();
+
+  if (status === 'loading') {
+    if (clientSideAuthConfig.loading)
+      return <>{clientSideAuthConfig.loading}</>;
+
+    return <div>Loading...</div>;
+  }
+
+  if (
+    clientSideAuthConfig.minimumRole &&
+    !minimumRoleSatisfied(
+      clientSideAuthConfig.minimumRole,
+      data.user?.role ?? Role.USER
+    )
+  ) {
+    router.push(clientSideAuthConfig.failRedirectURL ?? '/');
+  }
+
+  return <>{children}</>;
+};
+
 const getBaseUrl = () => {
-  if (typeof window !== "undefined") return ""; // browser should use relative url
+  if (typeof window !== 'undefined') return ''; // browser should use relative url
   if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`; // SSR should use vercel url
   return `http://localhost:${process.env.PORT ?? 3000}`; // dev SSR should use localhost
 };
@@ -73,8 +117,8 @@ export default withTRPC<AppRouter>({
       links: [
         loggerLink({
           enabled: (opts) =>
-            process.env.NODE_ENV === "development" ||
-            (opts.direction === "down" && opts.result instanceof Error),
+            process.env.NODE_ENV === 'development' ||
+            (opts.direction === 'down' && opts.result instanceof Error),
         }),
         httpBatchLink({ url }),
       ],
